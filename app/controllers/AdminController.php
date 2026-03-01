@@ -266,5 +266,109 @@ public function toggleGrupo($id) {
 }
 
 
+public function impressoras() {
+
+    if ($_SESSION['nivel'] != 'admin') exit;
+
+    require_once __DIR__ . '/../../config/database.php';
+
+    $db = Database::getInstance()->getConnection();
+
+    $stmt = $db->query("SELECT * FROM impressoras ORDER BY id");
+    $impressoras = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $this->view('admin/impressoras', [
+        'impressoras' => $impressoras
+    ]);
+}
+
+public function salvarImpressora() {
+
+    if ($_SESSION['nivel'] != 'admin') exit;
+
+    require_once __DIR__ . '/../../config/database.php';
+
+    $db = Database::getInstance()->getConnection();
+
+    $sql = "UPDATE impressoras
+            SET nome = :nome,
+                ip = :ip,
+                porta = :porta
+            WHERE id = :id";
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':nome', $_POST['nome']);
+    $stmt->bindValue(':ip', $_POST['ip']);
+    $stmt->bindValue(':porta', $_POST['porta']);
+    $stmt->bindValue(':id', $_POST['id']);
+    $stmt->execute();
+
+    header("Location: /espetinhov5/public/admin/impressoras");
+    exit;
+}
+
+
+public function testarImpressora($id) {
+
+    if ($_SESSION['nivel'] != 'admin') exit;
+
+    require_once __DIR__ . '/../../config/database.php';
+    require_once __DIR__ . '/../services/ImpressoraService.php';
+
+    $db = Database::getInstance()->getConnection();
+
+    $stmt = $db->prepare("SELECT * FROM impressoras WHERE id = :id");
+    $stmt->bindValue(':id', $id);
+    $stmt->execute();
+
+    $imp = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $ok = ImpressoraService::testarConexao($imp['ip'], $imp['porta']);
+
+    echo json_encode([
+        "status" => $ok ? "online" : "offline"
+    ]);
+}
+
+public function imprimirTeste($id) {
+
+    if ($_SESSION['nivel'] != 'admin') exit;
+
+    require_once __DIR__ . '/../../config/database.php';
+    require_once __DIR__ . '/../services/ImpressoraService.php';
+    require_once __DIR__ . '/../services/CupomService.php';
+
+    $db = Database::getInstance()->getConnection();
+
+    $stmt = $db->prepare("SELECT * FROM impressoras WHERE id = :id");
+    $stmt->bindValue(':id', $id);
+    $stmt->execute();
+
+    $imp = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $conteudo = CupomService::gerar(
+        "TESTE IMPRESSORA",
+        "00",
+        "0000",
+        $_SESSION['usuario'],
+        [
+            ["quantidade" => 1, "nome" => "IMPRESSAO OK"]
+        ]
+    );
+
+    ImpressoraService::imprimir(
+        $imp['ip'],
+        $imp['porta'],
+        $conteudo
+    );
+
+    header("Location: /espetinhov5/public/admin/impressoras");
+    exit;
+}
+
+
+
+
+
 
 }

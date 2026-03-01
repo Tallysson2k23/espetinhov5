@@ -19,4 +19,25 @@ class ImpressoraService {
 
         return true;
     }
+
+public static function testarConexao($ip, $porta) {
+
+    $socket = @fsockopen($ip, $porta, $errno, $errstr, 1);
+
+    if ($socket) {
+        fclose($socket);
+        return true;
+    }
+
+    return false;
+}
+
+
+
+
+
+
+
+
+
 }

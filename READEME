@@ -39,6 +39,7 @@ espetinhov5/
 │   │       ├── produtos.php
 │   │       ├── grupos.php 
 │   │       ├── editar_produto.php
+│   │       ├── impressoras.php
 │
 ├── config/
 │   ├── database.php
@@ -75,3 +76,13 @@ INSERT INTO impressoras (nome, ip) VALUES
 ('Cozinha Porções', '192.168.0.102'),
 ('Bebidas', '192.168.0.103'),
 ('Sucos', '192.168.0.104');
+
+IMPORTANTE
+
+Quando for testar no restaurante:
+
+Ajuste IP das impressoras na tabela impressoras
+
+Confirme que todas estão com porta 9100
+
+Todas devem estar na mesma rede do PC

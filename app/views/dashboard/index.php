@@ -81,6 +81,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
 <?php endif; ?>
 
+<?php if ($_SESSION['nivel'] == 'admin') : ?>
+
+    <a href="/espetinhov5/public/admin/impressoras"
+       class="btn btn-warning ms-2">
+       Configurar Impressoras
+    </a>
+
+<?php endif; ?>
+
+
 <!-- TOAST SUCESSO -->
 <div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
     <div id="toastSucesso" class="toast align-items-center text-bg-success border-0" role="alert">

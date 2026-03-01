@@ -10,27 +10,46 @@ class CupomService {
         $itens
     ) {
 
-        $linha = str_repeat("-", 48) . "\n";
+        $largura = 48;
+        $linha = str_repeat("-", $largura) . "\n";
 
-        $texto  = "\x1B\x61\x01"; // centralizar
+        $texto  = "\x1B\x40";        // Inicializa impressora
+        $texto .= "\x1B\x61\x01";    // Centralizar
         $texto .= strtoupper($titulo) . "\n";
-        $texto .= "\x1B\x61\x00"; // esquerda
+        $texto .= "\x1B\x61\x00";    // Alinhar esquerda
 
         $texto .= $linha;
-        $texto .= "Mesa: $mesa\n";
-        $texto .= "Atendimento: $atendimento\n";
+        $texto .= "Mesa: " . $mesa . "\n";
+        $texto .= "Atendimento: " . $atendimento . "\n";
+        $texto .= $linha;
+
+        $texto .= "Qtd  Descricao\n";
         $texto .= $linha;
 
         foreach ($itens as $item) {
-            $texto .= $item['quantidade'] . "x "
-                   . strtoupper($item['nome']) . "\n";
+
+            $qtd = $item['quantidade'];
+            $nome = strtoupper($item['nome']);
+
+            // Quebrar nome grande
+            if (strlen($nome) > 38) {
+                $nome = substr($nome, 0, 38);
+            }
+
+            $texto .= str_pad($qtd, 4)
+                    . " "
+                    . $nome . "\n";
         }
 
         $texto .= $linha;
+
         $texto .= "Atendente: " . strtoupper($garcom) . "\n";
-        $texto .= "Data/Hora: " . date("d/m/Y H:i:s") . "\n";
+        $texto .= "Data/Hora: " . date("d/m/Y H:i") . "\n";
+
         $texto .= $linha;
-        $texto .= "NAO E DOCUMENTO FISCAL\n\n\n";
+        $texto .= "NAO E DOCUMENTO FISCAL\n";
+
+        $texto .= "\n\n\n";
 
         return $texto;
     }
