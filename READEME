@@ -1,0 +1,51 @@
+espetinhov5/
+│
+├── app/
+│   ├── controllers/
+│   │   ├── AuthController.php
+│   │   ├── DashboardController.php
+│   │   ├── PedidoController.php
+│   │   ├── AdminController.php
+│   │
+│   ├── models/
+│   │   ├── Usuario.php
+│   │   ├── Produto.php
+│   │   ├── Grupo.php
+│   │   ├── Mesa.php
+│   │   ├── Pedido.php
+│   │
+│   ├── views/
+│   │   ├── layouts/
+│   │   │   ├── header.php
+│   │   │   ├── footer.php
+│   │   │
+│   │   ├── auth/
+│   │   │   ├── login.php
+│   │   │
+│   │   ├── dashboard/
+│   │   │   ├── index.php
+│   │   │
+│   │   ├── pedido/
+│   │   │   ├── modal.php
+│   │   │
+│   │   ├── admin/
+│   │       ├── usuarios.php
+│   │       ├── produtos.php
+│   │       ├── grupos.php
+│
+├── config/
+│   ├── database.php
+│   ├── config.php
+│
+├── core/
+│   ├── Router.php
+│   ├── Controller.php
+│   ├── Model.php
+│
+├── public/
+│   ├── index.php   ← PONTO DE ENTRADA DO SISTEMA
+│   ├── .htaccess
+│
+├── storage/
+│
+└── banco.sql
