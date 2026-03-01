@@ -65,4 +65,79 @@ class AdminController extends Controller {
         header("Location: /espetinhov5/public/admin/produtos");
         exit;
     }
+
+public function toggleProduto($id) {
+
+    if ($_SESSION['nivel'] != 'admin') exit;
+
+    $db = Database::getInstance()->getConnection();
+
+    $sql = "UPDATE produtos 
+            SET ativo = NOT ativo
+            WHERE id = :id";
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':id', $id);
+    $stmt->execute();
+
+    header("Location: /espetinhov5/public/admin/produtos");
+    exit;
+}
+
+
+public function editarProduto($id) {
+
+    if ($_SESSION['nivel'] != 'admin') exit;
+
+    $db = Database::getInstance()->getConnection();
+
+    $sql = "SELECT * FROM produtos WHERE id = :id";
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':id', $id);
+    $stmt->execute();
+    $produto = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    require_once __DIR__ . '/../models/Grupo.php';
+    $grupoModel = new Grupo();
+    $grupos = $grupoModel->listarAtivos();
+
+    $this->view('admin/editar_produto', [
+        'produto' => $produto,
+        'grupos' => $grupos
+    ]);
+}
+
+
+public function atualizarProduto($id) {
+
+    if (!isset($_SESSION['usuario']) || $_SESSION['nivel'] != 'admin') {
+        exit;
+    }
+
+    require_once __DIR__ . '/../../config/database.php';
+
+    $db = Database::getInstance()->getConnection();
+
+    $nome = $_POST['nome'];
+    $preco = $_POST['preco'];
+    $grupo_id = $_POST['grupo_id'];
+
+    // Atualizar dados básicos
+    $sql = "UPDATE produtos
+            SET nome = :nome,
+                preco = :preco,
+                grupo_id = :grupo_id
+            WHERE id = :id";
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':nome', $nome);
+    $stmt->bindValue(':preco', $preco);
+    $stmt->bindValue(':grupo_id', $grupo_id);
+    $stmt->bindValue(':id', $id);
+    $stmt->execute();
+
+    header("Location: /espetinhov5/public/admin/produtos");
+    exit;
+}
+
 }

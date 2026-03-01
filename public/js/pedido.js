@@ -16,12 +16,33 @@ document.querySelectorAll(".grupo-btn").forEach(btn => {
 
                 produtos.forEach(prod => {
 
-                    area.innerHTML += `
-                        <button class="btn btn-outline-dark w-100 mb-2"
-                                onclick="adicionarProduto(${prod.id}, '${prod.nome}', ${prod.preco})">
-                            ${prod.nome} - R$ ${prod.preco}
-                        </button>
-                    `;
+let imagem = prod.imagem 
+    ? "/espetinhov5/public/uploads/" + prod.imagem 
+    : "https://via.placeholder.com/100x100?text=Sem+Imagem";
+
+area.innerHTML += `
+    <div class="card mb-2 produto-card"
+         onclick="adicionarProduto(${prod.id}, '${prod.nome}', ${prod.preco})"
+         style="cursor:pointer">
+
+        <div class="row g-0 align-items-center">
+
+            <div class="col-4">
+                <img src="${imagem}"
+                     class="img-fluid rounded-start"
+                     style="height:80px; object-fit:cover;">
+            </div>
+
+            <div class="col-8">
+                <div class="card-body p-2">
+                    <h6 class="mb-1">${prod.nome}</h6>
+                    <strong>R$ ${parseFloat(prod.preco).toFixed(2)}</strong>
+                </div>
+            </div>
+
+        </div>
+    </div>
+`;
                 });
 
             });

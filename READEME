@@ -33,7 +33,8 @@ espetinhov5/
 │   │   ├── admin/
 │   │       ├── usuarios.php
 │   │       ├── produtos.php
-│   │       ├── grupos.php
+│   │       ├── grupos.php 
+│   │       ├── editar_produto.php
 │
 ├── config/
 │   ├── database.php

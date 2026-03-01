@@ -38,27 +38,57 @@
 
 <h4>Produtos Cadastrados</h4>
 
-<table class="table">
+<table class="table table-bordered">
     <tr>
         <th>Imagem</th>
         <th>Nome</th>
         <th>Preço</th>
         <th>Grupo</th>
+        <th>Status</th>
+        <th>Ações</th>
     </tr>
 
-    <?php foreach ($produtos as $produto) : ?>
-        <tr>
-            <td>
-                <?php if ($produto['imagem']) : ?>
-                    <img src="/espetinhov5/public/uploads/<?= $produto['imagem'] ?>"
-                         width="60">
-                <?php endif; ?>
-            </td>
-            <td><?= $produto['nome'] ?></td>
-            <td>R$ <?= number_format($produto['preco'],2,',','.') ?></td>
-            <td><?= $produto['grupo_nome'] ?></td>
-        </tr>
-    <?php endforeach; ?>
+<?php foreach ($produtos as $produto) : ?>
+<tr>
+
+    <td>
+        <?php if ($produto['imagem']) : ?>
+            <img src="/espetinhov5/public/uploads/<?= $produto['imagem'] ?>"
+                 width="60">
+        <?php endif; ?>
+    </td>
+
+    <td><?= $produto['nome'] ?></td>
+
+    <td>R$ <?= number_format($produto['preco'],2,',','.') ?></td>
+
+    <td><?= $produto['grupo_nome'] ?></td>
+
+    <td>
+        <?php if ($produto['ativo']) : ?>
+            <span class="badge bg-success">Ativo</span>
+        <?php else : ?>
+            <span class="badge bg-danger">Inativo</span>
+        <?php endif; ?>
+    </td>
+
+    <td>
+
+<a href="/espetinhov5/public/admin/editarProduto/<?= $produto['id'] ?>"
+   class="btn btn-sm btn-warning">
+   Editar
+</a>
+
+        <a href="/espetinhov5/public/admin/toggleProduto/<?= $produto['id'] ?>"
+           class="btn btn-sm btn-secondary">
+           Ativar/Desativar
+        </a>
+
+
+    </td>
+
+</tr>
+<?php endforeach; ?>
 </table>
 
 <a href="/espetinhov5/public/dashboard"
