@@ -1,0 +1,178 @@
+/* ===============================
+   ESPETINHO CENTRAL - TEMA V5 PROFISSIONAL
+================================ */
+
+/* FUNDO GERAL */
+body {
+    background: #1e222a; /* grafite profissional */
+    color: #f5f5f5;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* ===============================
+   LOGIN
+================================ */
+
+.card-login {
+    background: #2a2f38;
+    border-radius: 16px;
+    padding: 35px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+}
+
+.logo-login {
+    max-width: 170px;
+    margin-bottom: 20px;
+}
+
+.form-control {
+    background: #323844;
+    border: 1px solid #3d4450;
+    color: #fff;
+}
+
+.form-control:focus {
+    background: #323844;
+    border-color: #ff5e00;
+    box-shadow: 0 0 0 0.2rem rgba(255, 94, 0, 0.25);
+    color: #fff;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #ff5e00, #ff2e00);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+}
+
+/* ===============================
+   DASHBOARD PROFISSIONAL
+================================ */
+
+.dashboard-container {
+    max-width: 1400px;
+    margin: auto;
+    padding: 30px 20px;
+}
+
+/* Header */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.dashboard-title {
+    font-weight: 600;
+    font-size: 1.4rem;
+}
+
+.dashboard-title .nivel {
+    font-size: 0.85rem;
+    color: #9ca3af;
+}
+
+/* Botão sair */
+.btn-logout {
+    background: transparent;
+    border: 1px solid #3d4450;
+    color: #ddd;
+    border-radius: 8px;
+    padding: 6px 15px;
+    transition: 0.2s;
+}
+
+.btn-logout:hover {
+    background: #2f3542;
+}
+
+/* Menu Admin */
+.admin-menu {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.admin-item {
+    background: #2f3542;
+    padding: 8px 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #e5e7eb;
+    font-size: 0.9rem;
+    transition: 0.2s;
+}
+
+.admin-item:hover {
+    background: #ff5e00;
+    color: #fff;
+}
+
+/* Grid Mesas */
+.mesas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 18px;
+}
+
+/* Card Mesa */
+.mesa-card {
+    border-radius: 16px;
+    padding: 22px 10px;
+    text-align: center;
+    text-decoration: none;
+    color: #fff;
+    transition: 0.25s;
+    font-weight: 600;
+}
+
+/* Estados */
+.mesa-livre {
+    background: #1f7a3e;
+}
+
+.mesa-ocupada {
+    background: #b02a2a;
+}
+
+/* Hover */
+.mesa-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
+
+/* Nome mesa */
+.mesa-nome {
+    font-size: 1.1rem;
+}
+
+/* Timer */
+.timer {
+    font-size: 0.85rem;
+    margin-top: 6px;
+    opacity: 0.9;
+}
+
+/* ===============================
+   RESPONSIVO
+================================ */
+
+@media (max-width: 768px) {
+
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .mesas-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    }
+
+}
