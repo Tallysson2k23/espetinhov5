@@ -83,6 +83,8 @@ public function salvar() {
     require_once __DIR__ . '/../models/Pedido.php';
     require_once __DIR__ . '/../models/Mesa.php';
     require_once __DIR__ . '/../../config/database.php';
+    require_once __DIR__ . '/../services/ImpressoraService.php';
+    require_once __DIR__ . '/../services/CupomService.php';
 
     $dados = json_decode(file_get_contents("php://input"), true);
 
@@ -93,15 +95,15 @@ public function salvar() {
     $mesaModel = new Mesa();
     $db = Database::getInstance()->getConnection();
 
-    // Criar pedido
+    // =========================
+    // 1️⃣ Criar pedido
+    // =========================
     $pedido_id = $pedidoModel->criarPedido(
         $atendimento_id,
         $_SESSION['usuario_id']
     );
 
-    // Inserir itens
     foreach ($itens as $item) {
-
         $pedidoModel->inserirItem(
             $pedido_id,
             $item['id'],
@@ -110,17 +112,26 @@ public function salvar() {
         );
     }
 
-    // Buscar mesa_id do atendimento
-    $sqlMesa = "SELECT mesa_id FROM atendimentos WHERE id = :id";
+    // =========================
+    // 2️⃣ Buscar mesa
+    // =========================
+    $sqlMesa = "SELECT m.id, m.numero
+                FROM mesas m
+                JOIN atendimentos a ON a.mesa_id = m.id
+                WHERE a.id = :id";
+
     $stmtMesa = $db->prepare($sqlMesa);
     $stmtMesa->bindValue(':id', $atendimento_id);
     $stmtMesa->execute();
-    $mesa_id = $stmtMesa->fetch(PDO::FETCH_ASSOC)['mesa_id'];
+    $mesa = $stmtMesa->fetch(PDO::FETCH_ASSOC);
 
-    // Marcar mesa como ocupada
+    $mesa_id = $mesa['id'];
+    $mesaNumero = $mesa['numero'];
+
+    // Marcar ocupada
     $mesaModel->atualizarStatus($mesa_id, 'ocupada');
 
-    // Iniciar timer apenas se ainda for NULL
+    // Iniciar timer se NULL
     $sqlInicio = "UPDATE mesas
                   SET inicio_atendimento = NOW()
                   WHERE id = :mesa_id
@@ -130,9 +141,53 @@ public function salvar() {
     $stmtInicio->bindValue(':mesa_id', $mesa_id);
     $stmtInicio->execute();
 
+    // =========================
+    // 3️⃣ Preparar impressão
+    // =========================
+    $itensComGrupo = $pedidoModel->listarItensComGrupo($pedido_id);
+
+    $gruposImpressao = [];
+
+    foreach ($itensComGrupo as $item) {
+        $gruposImpressao[$item['impressora']][] = $item;
+    }
+
+    // Buscar impressoras
+    $stmtImp = $db->query("SELECT * FROM impressoras");
+    $impressoras = $stmtImp->fetchAll(PDO::FETCH_ASSOC);
+
+    $impressorasMap = [];
+    foreach ($impressoras as $imp) {
+        $impressorasMap[$imp['id']] = $imp;
+    }
+
+    // =========================
+    // 4️⃣ Enviar para impressoras
+    // =========================
+    foreach ($gruposImpressao as $impressoraId => $itensGrupo) {
+
+        if (!isset($impressorasMap[$impressoraId])) continue;
+
+        $imp = $impressorasMap[$impressoraId];
+
+        $conteudo = CupomService::gerar(
+            $imp['nome'],
+            $mesaNumero,
+            $atendimento_id,
+            $_SESSION['usuario'],
+            $itensGrupo
+        );
+
+        // Timeout de 1 segundo para não travar
+        ImpressoraService::imprimir(
+            $imp['ip'],
+            $imp['porta'],
+            $conteudo
+        );
+    }
+
     echo json_encode(["status" => "ok"]);
 }
-
 public function fechar() {
 
     if (!isset($_SESSION['usuario']) || $_SESSION['nivel'] != 'admin') {

@@ -79,6 +79,23 @@ public function calcularTotalAtendimento($atendimento_id) {
     return $resultado['total'] ?? 0;
 }
 
+public function listarItensComGrupo($pedido_id) {
+
+    $sql = "SELECT 
+                ip.quantidade,
+                p.nome,
+                g.impressora
+            FROM itens_pedido ip
+            JOIN produtos p ON p.id = ip.produto_id
+            JOIN grupos g ON g.id = p.grupo_id
+            WHERE ip.pedido_id = :pedido_id";
+
+    $stmt = $this->db->prepare($sql);
+    $stmt->bindValue(':pedido_id', $pedido_id);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
 
 

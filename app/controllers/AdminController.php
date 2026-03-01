@@ -140,4 +140,131 @@ public function atualizarProduto($id) {
     exit;
 }
 
+public function usuarios() {
+
+    if ($_SESSION['nivel'] != 'admin') exit;
+
+    require_once __DIR__ . '/../../config/database.php';
+
+    $db = Database::getInstance()->getConnection();
+
+    $sql = "SELECT * FROM usuarios ORDER BY id DESC";
+    $stmt = $db->query($sql);
+    $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $this->view('admin/usuarios', [
+        'usuarios' => $usuarios
+    ]);
+}
+
+public function salvarUsuario() {
+
+    if ($_SESSION['nivel'] != 'admin') exit;
+
+    require_once __DIR__ . '/../../config/database.php';
+
+    $db = Database::getInstance()->getConnection();
+
+    $nome = $_POST['nome'];
+    $usuario = $_POST['usuario'];
+    $senha = md5($_POST['senha']);
+    $nivel = $_POST['nivel'];
+
+    $sql = "INSERT INTO usuarios (nome, usuario, senha, nivel, ativo)
+            VALUES (:nome, :usuario, :senha, :nivel, TRUE)";
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':nome', $nome);
+    $stmt->bindValue(':usuario', $usuario);
+    $stmt->bindValue(':senha', $senha);
+    $stmt->bindValue(':nivel', $nivel);
+    $stmt->execute();
+
+    header("Location: /espetinhov5/public/admin/usuarios");
+    exit;
+}
+
+public function toggleUsuario($id) {
+
+    if ($_SESSION['nivel'] != 'admin') exit;
+
+    require_once __DIR__ . '/../../config/database.php';
+
+    $db = Database::getInstance()->getConnection();
+
+    $sql = "UPDATE usuarios
+            SET ativo = NOT ativo
+            WHERE id = :id";
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':id', $id);
+    $stmt->execute();
+
+    header("Location: /espetinhov5/public/admin/usuarios");
+    exit;
+}
+
+
+public function grupos() {
+
+    if ($_SESSION['nivel'] != 'admin') exit;
+
+    require_once __DIR__ . '/../../config/database.php';
+
+    $db = Database::getInstance()->getConnection();
+
+    $sql = "SELECT * FROM grupos ORDER BY id DESC";
+    $stmt = $db->query($sql);
+    $grupos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $this->view('admin/grupos', [
+        'grupos' => $grupos
+    ]);
+}
+
+public function salvarGrupo() {
+
+    if ($_SESSION['nivel'] != 'admin') exit;
+
+    require_once __DIR__ . '/../../config/database.php';
+
+    $db = Database::getInstance()->getConnection();
+
+    $nome = $_POST['nome'];
+    $impressora = $_POST['impressora'];
+
+    $sql = "INSERT INTO grupos (nome, impressora, ativo)
+            VALUES (:nome, :impressora, TRUE)";
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':nome', $nome);
+    $stmt->bindValue(':impressora', $impressora);
+    $stmt->execute();
+
+    header("Location: /espetinhov5/public/admin/grupos");
+    exit;
+}
+
+public function toggleGrupo($id) {
+
+    if ($_SESSION['nivel'] != 'admin') exit;
+
+    require_once __DIR__ . '/../../config/database.php';
+
+    $db = Database::getInstance()->getConnection();
+
+    $sql = "UPDATE grupos
+            SET ativo = NOT ativo
+            WHERE id = :id";
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':id', $id);
+    $stmt->execute();
+
+    header("Location: /espetinhov5/public/admin/grupos");
+    exit;
+}
+
+
+
 }

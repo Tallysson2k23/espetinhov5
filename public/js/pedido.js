@@ -112,26 +112,37 @@ function enviarPedido(atendimento_id) {
         return;
     }
 
-    fetch("/espetinhov5/public/pedido/salvar", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            atendimento_id: atendimento_id,
-            itens: carrinho
-        })
+fetch("/espetinhov5/public/pedido/salvar", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        atendimento_id: atendimento_id,
+        itens: carrinho
     })
-    .then(res => res.json())
-    .then(res => {
+})
 
-        if (res.status === "ok") {
-            alert("Pedido enviado com sucesso!");
-            carrinho = [];
-            atualizarCarrinho();
-        }
 
-    });
+.then(response => response.json())
+.then(data => {
+
+    if (data.status === "ok") {
+
+        sessionStorage.setItem(
+            "msg_sucesso",
+            "Pedido enviado para cozinha!"
+        );
+
+        // Redireciona para dashboard
+        window.location.href = "/espetinhov5/public/dashboard";
+    }
+
+})
+.catch(error => {
+    console.error("Erro ao enviar pedido:", error);
+});
+
 
 }
 

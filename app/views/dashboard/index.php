@@ -2,6 +2,63 @@
     Bem-vindo, <?= $_SESSION['usuario'] ?> 
     (<?= $_SESSION['nivel'] ?>)
 </h3>
+<div id="toast-sucesso"
+     style="position:fixed;
+            top:20px;
+            right:20px;
+            background:#198754;
+            color:white;
+            padding:15px 25px;
+            border-radius:8px;
+            display:none;
+            z-index:9999;">
+
+    <span id="toast-msg"></span>
+
+    <div style="height:4px;
+                background:white;
+                margin-top:8px;
+                width:100%;
+                animation: diminuir 3s linear forwards;">
+    </div>
+</div>
+
+<style>
+@keyframes diminuir {
+    from { width:100%; }
+    to { width:0%; }
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    let msg = sessionStorage.getItem("msg_sucesso");
+
+    if (msg) {
+
+        let toast = document.getElementById("toast-sucesso");
+        document.getElementById("toast-msg").innerText = msg;
+
+        toast.style.display = "block";
+
+        setTimeout(() => {
+            toast.style.display = "none";
+        }, 3000);
+
+        sessionStorage.removeItem("msg_sucesso");
+    }
+
+});
+</script>
+
+    <?php if ($_SESSION['nivel'] == 'admin') : ?>
+
+    <a href="/espetinhov5/public/admin/usuarios"
+       class="btn btn-secondary ms-2">
+       Gerenciar Usuários
+    </a>
+<?php endif; ?>
 
 <?php if ($_SESSION['nivel'] == 'admin') : ?>
 
@@ -11,6 +68,16 @@
            Gerenciar Produtos
         </a>
     </div>
+<?php endif; ?>
+
+
+
+<?php if ($_SESSION['nivel'] == 'admin') : ?>
+
+    <a href="/espetinhov5/public/admin/grupos"
+       class="btn btn-dark ms-2">
+       Gerenciar Grupos
+    </a>
 
 <?php endif; ?>
 

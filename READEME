@@ -14,6 +14,10 @@ espetinhov5/
 │   │   ├── Mesa.php
 │   │   ├── Pedido.php
 │   │   ├── Atendimento.php
+│   │   
+│   ├── services/ 
+│   │   ├── ImpressoraService.php
+│   │   ├── CupomService.php
 │   │
 │   ├── views/
 │   │   ├── layouts/
@@ -55,3 +59,19 @@ espetinhov5/
 ├── storage/
 │
 └── banco.sql
+
+
+
+
+
+
+----------------------------------------
+🚀 ETAPA 2 — Inserir suas 4 impressoras
+
+Depois execute (ajuste IP depois quando estiver no caixa):
+
+INSERT INTO impressoras (nome, ip) VALUES
+('Cozinha Espetos', '192.168.0.101'),
+('Cozinha Porções', '192.168.0.102'),
+('Bebidas', '192.168.0.103'),
+('Sucos', '192.168.0.104');
