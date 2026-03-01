@@ -19,14 +19,12 @@ class PedidoController extends Controller {
         // Verifica se já existe atendimento aberto
         $atendimento = $atendimentoModel->buscarAbertoPorMesa($mesa_id);
 
-        if (!$atendimento) {
+if (!$atendimento) {
 
-            // Criar atendimento
-            $atendimento = $atendimentoModel->criarAtendimento($mesa_id);
+    $atendimento = $atendimentoModel->criarAtendimento($mesa_id);
 
-            // Mudar status da mesa
-            $mesaModel->atualizarStatus($mesa_id, 'ocupada');
-        }
+    // NÃO muda status aqui
+}
 
         header("Location: /espetinhov5/public/pedido/visualizar/" . $atendimento['id']);
         exit;
@@ -83,6 +81,8 @@ public function salvar() {
     }
 
     require_once __DIR__ . '/../models/Pedido.php';
+    require_once __DIR__ . '/../models/Mesa.php';
+    require_once __DIR__ . '/../../config/database.php';
 
     $dados = json_decode(file_get_contents("php://input"), true);
 
@@ -90,12 +90,16 @@ public function salvar() {
     $itens = $dados['itens'];
 
     $pedidoModel = new Pedido();
+    $mesaModel = new Mesa();
+    $db = Database::getInstance()->getConnection();
 
+    // Criar pedido
     $pedido_id = $pedidoModel->criarPedido(
         $atendimento_id,
         $_SESSION['usuario_id']
     );
 
+    // Inserir itens
     foreach ($itens as $item) {
 
         $pedidoModel->inserirItem(
@@ -105,6 +109,26 @@ public function salvar() {
             $item['preco']
         );
     }
+
+    // Buscar mesa_id do atendimento
+    $sqlMesa = "SELECT mesa_id FROM atendimentos WHERE id = :id";
+    $stmtMesa = $db->prepare($sqlMesa);
+    $stmtMesa->bindValue(':id', $atendimento_id);
+    $stmtMesa->execute();
+    $mesa_id = $stmtMesa->fetch(PDO::FETCH_ASSOC)['mesa_id'];
+
+    // Marcar mesa como ocupada
+    $mesaModel->atualizarStatus($mesa_id, 'ocupada');
+
+    // Iniciar timer apenas se ainda for NULL
+    $sqlInicio = "UPDATE mesas
+                  SET inicio_atendimento = NOW()
+                  WHERE id = :mesa_id
+                  AND inicio_atendimento IS NULL";
+
+    $stmtInicio = $db->prepare($sqlInicio);
+    $stmtInicio->bindValue(':mesa_id', $mesa_id);
+    $stmtInicio->execute();
 
     echo json_encode(["status" => "ok"]);
 }
@@ -156,6 +180,15 @@ public function fechar() {
 
     // Liberar mesa
     $mesaModel->atualizarStatus($mesa_id, 'livre');
+
+    // Zerar timer da mesa
+$sqlReset = "UPDATE mesas
+             SET inicio_atendimento = NULL
+             WHERE id = :mesa_id";
+
+$stmtReset = $db->prepare($sqlReset);
+$stmtReset->bindValue(':mesa_id', $mesa_id);
+$stmtReset->execute();
 
     echo json_encode([
         "status" => "ok",

@@ -4,30 +4,23 @@ require_once __DIR__ . '/../../core/Model.php';
 
 class Mesa extends Model {
 
-    public function listarTodas() {
+public function listarTodas() {
 
-        $sql = "SELECT * FROM mesas ORDER BY numero ASC";
-        $stmt = $this->db->query($sql);
+    $sql = "SELECT *,
+            EXTRACT(EPOCH FROM (NOW() - inicio_atendimento)) as segundos
+            FROM mesas
+            ORDER BY numero ASC";
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+    $stmt = $this->db->query($sql);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
     
-   public function atualizarStatus($mesa_id, $status) {
+public function atualizarStatus($mesa_id, $status) {
 
-    if ($status == 'ocupada') {
-
-        $sql = "UPDATE mesas 
-                SET status = :status,
-                    inicio_atendimento = NOW()
-                WHERE id = :mesa_id";
-
-    } else {
-
-        $sql = "UPDATE mesas 
-                SET status = :status,
-                    inicio_atendimento = NULL
-                WHERE id = :mesa_id";
-    }
+    $sql = "UPDATE mesas 
+            SET status = :status
+            WHERE id = :mesa_id";
 
     $stmt = $this->db->prepare($sql);
     $stmt->bindValue(':status', $status, PDO::PARAM_STR);

@@ -79,13 +79,48 @@ document.addEventListener("DOMContentLoaded", function() {
            class="btn btn-<?= $cor ?> w-100 p-4">
 
             <h4>Mesa <?= $mesa['numero'] ?></h4>
-
         </a>
+        <?php if ($mesa['inicio_atendimento']) : ?>
+    <small class="timer"
+           data-segundos="<?= (int)$mesa['segundos'] ?>">
+        00:00:00
+    </small>
+<?php endif; ?>
     </div>
 
 <?php endforeach; ?>
 
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    function formatarTempo(segundos) {
+
+        let h = Math.floor(segundos / 3600);
+        let m = Math.floor((segundos % 3600) / 60);
+        let s = segundos % 60;
+
+        return String(h).padStart(2,'0') + ":" +
+               String(m).padStart(2,'0') + ":" +
+               String(s).padStart(2,'0');
+    }
+
+    document.querySelectorAll(".timer").forEach(function(el) {
+
+        let segundos = parseInt(el.dataset.segundos);
+
+        el.innerText = formatarTempo(segundos);
+
+        setInterval(function() {
+            segundos++;
+            el.innerText = formatarTempo(segundos);
+        }, 1000);
+
+    });
+
+});
+</script>
 
 <a href="/espetinhov5/public/auth/logout" class="btn btn-dark mt-4">
     Sair

@@ -66,7 +66,9 @@ public function calcularTotalAtendimento($atendimento_id) {
     $sql = "SELECT SUM(ip.quantidade * ip.preco_unitario) as total
             FROM pedidos p
             JOIN itens_pedido ip ON ip.pedido_id = p.id
-            WHERE p.atendimento_id = :atendimento_id";
+            JOIN atendimentos a ON a.id = p.atendimento_id
+            WHERE p.atendimento_id = :atendimento_id
+            AND a.aberto = TRUE";
 
     $stmt = $this->db->prepare($sql);
     $stmt->bindValue(':atendimento_id', $atendimento_id);

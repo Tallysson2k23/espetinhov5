@@ -6,17 +6,17 @@ class Atendimento extends Model {
 
     public function buscarAbertoPorMesa($mesa_id) {
 
-        $sql = "SELECT * FROM atendimentos 
-                WHERE mesa_id = :mesa_id 
-                AND aberto = TRUE
-                LIMIT 1";
+    $sql = "SELECT * FROM atendimentos 
+            WHERE mesa_id = :mesa_id 
+            AND aberto = TRUE
+            LIMIT 1";
 
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindValue(':mesa_id', $mesa_id);
-        $stmt->execute();
+    $stmt = $this->db->prepare($sql);
+    $stmt->bindValue(':mesa_id', $mesa_id);
+    $stmt->execute();
 
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
 
     public function criarAtendimento($mesa_id) {
 
