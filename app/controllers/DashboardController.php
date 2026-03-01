@@ -17,4 +17,25 @@ class DashboardController extends Controller {
 
         $this->view('dashboard/index', ['mesas' => $mesas]);
     }
+
+    public function statusMesas() {
+
+    require_once __DIR__ . '/../../config/database.php';
+
+    $db = Database::getInstance()->getConnection();
+
+    $sql = "SELECT id, status, inicio_atendimento
+            FROM mesas
+            ORDER BY id";
+
+    $stmt = $db->query($sql);
+    $mesas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    echo json_encode($mesas);
+}
+
+
+
+
+
 }

@@ -152,8 +152,9 @@ document.addEventListener("DOMContentLoaded", function() {
 ?>
 
     <div class="col-6 col-md-3 col-lg-2 mb-3">
-        <a href="/espetinhov5/public/pedido/abrir/<?= $mesa['id'] ?>" 
-           class="btn btn-<?= $cor ?> w-100 p-4">
+<a id="mesa-<?= $mesa['id'] ?>"
+   href="/espetinhov5/public/pedido/abrir/<?= $mesa['id'] ?>" 
+   class="btn btn-<?= $cor ?> w-100 p-4">
 
             <h4>Mesa <?= $mesa['numero'] ?></h4>
         </a>
@@ -197,6 +198,39 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
 });
+</script>
+
+<script>
+
+function atualizarMesas() {
+
+    fetch("/espetinhov5/public/dashboard/statusMesas")
+        .then(res => res.json())
+        .then(mesas => {
+
+            mesas.forEach(mesa => {
+
+                let card = document.getElementById("mesa-" + mesa.id);
+
+                if (!card) return;
+
+                if (mesa.status === "ocupada") {
+                    card.classList.remove("btn-success");
+                    card.classList.add("btn-danger");
+                } else {
+                    card.classList.remove("btn-danger");
+                    card.classList.add("btn-success");
+                }
+
+            });
+
+        });
+
+}
+
+// Atualiza a cada 3 segundos
+setInterval(atualizarMesas, 3000);
+
 </script>
 
 <a href="/espetinhov5/public/auth/logout" class="btn btn-dark mt-4">
