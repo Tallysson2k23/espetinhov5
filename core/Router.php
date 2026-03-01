@@ -1,0 +1,52 @@
+<?php
+
+class Router {
+
+    public function run() {
+
+$url = isset($_GET['url']) ? explode('/', $_GET['url']) : ['auth', 'login'];
+
+if ($url[0] == 'api') {
+
+    require_once __DIR__ . '/../app/controllers/PedidoController.php';
+    $controller = new PedidoController();
+    $controller->apiProdutos($url[2]);
+    return;
+}
+
+if ($url[0] == 'pedido' && $url[1] == 'salvar') {
+
+    require_once __DIR__ . '/../app/controllers/PedidoController.php';
+    $controller = new PedidoController();
+    $controller->salvar();
+    return;
+}
+
+if ($url[0] == 'pedido' && $url[1] == 'fechar') {
+
+    require_once __DIR__ . '/../app/controllers/PedidoController.php';
+    $controller = new PedidoController();
+    $controller->fechar();
+    return;
+}
+
+        $controllerName = ucfirst($url[0]) . 'Controller';
+        $method = $url[1] ?? 'index';
+
+        $controllerPath = __DIR__ . '/../app/controllers/' . $controllerName . '.php';
+
+        if (!file_exists($controllerPath)) {
+            die("Controller não encontrado");
+        }
+
+        require_once $controllerPath;
+
+        $controller = new $controllerName();
+
+        if (!method_exists($controller, $method)) {
+            die("Método não encontrado");
+        }
+
+        call_user_func_array([$controller, $method], array_slice($url, 2));
+    }
+}

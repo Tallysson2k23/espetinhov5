@@ -13,6 +13,7 @@ espetinhov5/
 │   │   ├── Grupo.php
 │   │   ├── Mesa.php
 │   │   ├── Pedido.php
+│   │   ├── Atendimento.php
 │   │
 │   ├── views/
 │   │   ├── layouts/
@@ -27,6 +28,7 @@ espetinhov5/
 │   │   │
 │   │   ├── pedido/
 │   │   │   ├── modal.php
+│   │   │   ├── index.php
 │   │   │
 │   │   ├── admin/
 │   │       ├── usuarios.php
@@ -43,8 +45,11 @@ espetinhov5/
 │   ├── Model.php
 │
 ├── public/
+│   ├── uploads
 │   ├── index.php   ← PONTO DE ENTRADA DO SISTEMA
 │   ├── .htaccess
+│   ├── js/
+│   │   ├── pedido.js
 │
 ├── storage/
 │
