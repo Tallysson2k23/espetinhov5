@@ -186,7 +186,10 @@ public function salvar() {
         );
     }
 
-    echo json_encode(["status" => "ok"]);
+    echo json_encode([
+    "status" => "ok",
+    "mensagem" => "Pedido enviado para cozinha!"
+]);
 }
 public function fechar() {
 

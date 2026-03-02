@@ -13,4 +13,4 @@
 </head>
 <body>
 
-<div class="container mt-4">
+<div class="container-fluid dashboard-container px-4">

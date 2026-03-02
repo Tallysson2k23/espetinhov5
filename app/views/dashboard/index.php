@@ -1,43 +1,78 @@
-<div class="dashboard-container">
+<div class="dashboard-wrapper">
 
-    <!-- HEADER -->
-    <div class="dashboard-header">
-        <div>
-            <h2 class="dashboard-title">
-                <?= $_SESSION['usuario'] ?>
-                <span class="nivel">(<?= $_SESSION['nivel'] ?>)</span>
-            </h2>
+    <!-- HEADER SUPERIOR -->
+    <div class="topbar">
+
+        <div class="brand">
+            <div class="logo-circle">
+    <img src="/espetinhov5/public/assets/img/logo.png" 
+         alt="Logo"
+         class="logo-img">
+</div>
+            <div>
+                <div class="brand-title">Espetinho Central</div>
+                <div class="brand-sub">Sistema PDV</div>
+            </div>
         </div>
 
-        <a href="/espetinhov5/public/auth/logout"
-           class="btn btn-logout">
-            Sair
-        </a>
+        <div class="top-actions">
+            <span class="user-name">
+                <?= $_SESSION['usuario'] ?> 
+                <small>(<?= $_SESSION['nivel'] ?>)</small>
+            </span>
+
+            <a href="/espetinhov5/public/auth/logout" class="btn-logout">
+                Sair
+            </a>
+        </div>
+
     </div>
 
-
-    <!-- MENU ADMIN -->
     <?php if ($_SESSION['nivel'] == 'admin') : ?>
-        <div class="admin-menu">
+    <div class="admin-menu">
 
-            <a href="/espetinhov5/public/admin/usuarios" class="admin-item">
-                Usuários
-            </a>
+        <a href="/espetinhov5/public/admin/usuarios" class="admin-item">
+            Usuários
+        </a>
 
-            <a href="/espetinhov5/public/admin/produtos" class="admin-item">
-                Produtos
-            </a>
+        <a href="/espetinhov5/public/admin/produtos" class="admin-item">
+            Produtos
+        </a>
 
-            <a href="/espetinhov5/public/admin/grupos" class="admin-item">
-                Grupos
-            </a>
+        <a href="/espetinhov5/public/admin/grupos" class="admin-item">
+            Grupos
+        </a>
 
-            <a href="/espetinhov5/public/admin/impressoras" class="admin-item">
-                Impressoras
-            </a>
+        <a href="/espetinhov5/public/admin/impressoras" class="admin-item">
+            Impressoras
+        </a>
 
+    </div>
+<?php endif; ?>
+
+
+
+    <!-- STATUS RESUMO -->
+    <?php
+        $livres = 0;
+        $ocupadas = 0;
+        foreach ($mesas as $m) {
+            if ($m['status'] == 'livre') $livres++;
+            else $ocupadas++;
+        }
+    ?>
+
+    <div class="status-bar">
+        <div class="status-item livre">
+            <span class="dot"></span>
+            <?= $livres ?> livres
         </div>
-    <?php endif; ?>
+
+        <div class="status-item ocupada">
+            <span class="dot"></span>
+            <?= $ocupadas ?> ocupadas
+        </div>
+    </div>
 
 
     <!-- GRID MESAS -->
@@ -55,15 +90,27 @@
                href="/espetinhov5/public/pedido/abrir/<?= $mesa['id'] ?>"
                class="mesa-card <?= $classe ?>">
 
-                <div class="mesa-nome">
-                    Mesa <?= $mesa['numero'] ?>
+                <div class="mesa-header">
+                    <div class="mesa-numero">
+                        <?= $mesa['numero'] ?>
+                    </div>
+
+                    <div class="status-dot"></div>
+                </div>
+
+                <div class="mesa-label">
+                    MESA
+                </div>
+
+                <div class="mesa-status">
+                    <?= $mesa['status'] == 'livre' ? 'Livre' : 'Ocupada' ?>
                 </div>
 
                 <?php if ($mesa['inicio_atendimento']) : ?>
-                    <div class="timer"
-                         data-segundos="<?= (int)$mesa['segundos'] ?>">
-                        00:00:00
-                    </div>
+                   <div class="timer"
+     data-segundos="<?= (int)$mesa['segundos'] ?>">
+     ⏱ 00:00:00
+</div>
                 <?php endif; ?>
 
             </a>
@@ -74,61 +121,53 @@
 
 </div>
 
-
-
-<!-- ============================= -->
-<!-- TOAST (MANTIDO ORIGINAL) -->
-<!-- ============================= -->
+<?php if (isset($_SESSION['msg_sucesso'])) : ?>
 
 <div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
-    <div id="toastSucesso" class="toast align-items-center text-bg-success border-0" role="alert">
+    <div id="toastSucesso"
+         class="toast align-items-center text-bg-success border-0 show"
+         role="alert">
+
         <div class="d-flex">
-            <div class="toast-body" id="toastMensagem"></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto"
-                    data-bs-dismiss="toast"></button>
+            <div class="toast-body">
+                <?= $_SESSION['msg_sucesso']; ?>
+            </div>
+            <button type="button"
+                    class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast">
+            </button>
         </div>
 
         <div class="progress" style="height: 4px;">
             <div id="toastBarra"
                  class="progress-bar bg-light"
-                 style="width: 100%"></div>
+                 style="width: 100%">
+            </div>
         </div>
+
     </div>
 </div>
 
-
-
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-
-    let mensagem = sessionStorage.getItem("msg_sucesso");
-
-    if (mensagem) {
-
-        let toastEl = document.getElementById("toastSucesso");
-        let toastMsg = document.getElementById("toastMensagem");
-        let toastBarra = document.getElementById("toastBarra");
-
-        toastMsg.innerText = mensagem;
-
-        let toast = new bootstrap.Toast(toastEl, {
-            delay: 3000
-        });
-
-        toast.show();
-
+    document.addEventListener("DOMContentLoaded", function() {
+        let barra = document.getElementById("toastBarra");
         let largura = 100;
+
         let intervalo = setInterval(function() {
             largura -= 1;
-            toastBarra.style.width = largura + "%";
+            barra.style.width = largura + "%";
             if (largura <= 0) clearInterval(intervalo);
         }, 30);
 
-        sessionStorage.removeItem("msg_sucesso");
-    }
-
-});
+        setTimeout(function() {
+            let toast = document.getElementById("toastSucesso");
+            if (toast) toast.remove();
+        }, 3000);
+    });
 </script>
+
+<?php unset($_SESSION['msg_sucesso']); ?>
+<?php endif; ?>
 
 
 
@@ -196,4 +235,32 @@ function atualizarMesas() {
 
 setInterval(atualizarMesas, 3000);
 
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    let mensagem = sessionStorage.getItem("msg_sucesso");
+
+    if (mensagem) {
+
+        let toastHtml = `
+        <div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
+            <div class="toast show text-bg-success border-0">
+                <div class="d-flex">
+                    <div class="toast-body">${mensagem}</div>
+                </div>
+            </div>
+        </div>`;
+
+        document.body.insertAdjacentHTML("beforeend", toastHtml);
+
+        setTimeout(() => {
+            document.querySelector(".toast")?.remove();
+        }, 3000);
+
+        sessionStorage.removeItem("msg_sucesso");
+    }
+
+});
 </script>
