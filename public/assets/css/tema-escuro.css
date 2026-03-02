@@ -366,3 +366,194 @@ body {
 .mesa-label {
     color: #94a3b8;
 }
+/* ============================
+   PDV ESTILO SISTEMA ANTIGO
+============================ */
+
+.pdv-old {
+    background: transparent;
+    color: #f1f5f9;
+    padding: 20px;
+}
+
+/* HEADER AZUL */
+.pdv-top {
+    background: rgba(255,94,0,0.08);
+    border: 1px solid rgba(255,94,0,0.3);
+    border-radius: 12px;
+    padding: 12px 18px;
+    margin-bottom: 15px;
+}
+
+.pdv-right {
+    display: flex;
+    gap: 30px;
+}
+
+/* GRUPOS */
+.pdv-grupos-top {
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+.grupo-top-btn {
+    background: transparent;
+    border: 1px solid rgba(255,94,0,0.5);
+    color: #ff5e00;
+    padding: 8px 14px;
+    border-radius: 8px;
+}
+
+.grupo-top-btn:hover {
+    background: #ff5e00;
+    color: #fff;
+}
+/* MAIN */
+.pdv-main {
+    display: grid;
+    grid-template-columns: 2.2fr 1fr;
+    gap: 20px;
+}
+
+/* PRODUTOS */
+.pdv-produtos-area {
+    background: #fff;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+/* CARRINHO */
+.pdv-carrinho-area {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,94,0,0.2);
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.pdv-carrinho-area,
+.pdv-carrinho-area li,
+.pdv-carrinho-area span {
+    color: #f1f5f9;
+}
+
+#carrinho li {
+    padding: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.carrinho-header {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#carrinho {
+    flex: 1;
+    list-style: none;
+    padding: 0;
+    overflow-y: auto;
+}
+
+/* RODAPÉ */
+.pdv-footer {
+    background: rgba(255,94,0,0.08);
+    border: 1px solid rgba(255,94,0,0.3);
+    border-radius: 12px;
+    padding: 12px 18px;
+    margin-top: 15px;
+}
+
+.pdv-total-box {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.pdv-total-box span {
+    color: red;
+    margin-left: 15px;
+    font-size: 26px;
+}
+
+/* ===============================
+   BOTÕES PDV MELHORADOS
+================================ */
+
+.pdv-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.pdv-buttons button,
+.pdv-buttons a {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    text-decoration: none;
+}
+
+/* ENVIAR (principal) */
+.pdv-buttons button:first-child {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    color: #fff;
+}
+
+.pdv-buttons button:first-child:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(22,163,74,0.4);
+}
+
+/* FECHAR */
+.pdv-buttons .btn-fechar {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: #fff;
+}
+
+.pdv-buttons .btn-fechar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(220,38,38,0.4);
+}
+
+/* VOLTAR */
+.pdv-buttons a {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #f1f5f9;
+}
+
+.pdv-buttons a:hover {
+    background: rgba(255,255,255,0.15);
+}
+/* MOBILE */
+@media (max-width: 768px) {
+
+    .pdv-main {
+        grid-template-columns: 1fr;
+    }
+
+    .pdv-grupos-top {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .grupo-top-btn {
+        display: inline-block;
+        margin-right: 6px;
+    }
+
+}
+/* RESPONSIVO */
+@media (max-width: 992px) {
+    .pdv-body {
+        grid-template-columns: 1fr;
+    }
+}

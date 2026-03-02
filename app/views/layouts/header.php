@@ -13,4 +13,11 @@
 </head>
 <body>
 
+<?php
+$currentUrl = $_SERVER['REQUEST_URI'];
+$isPedido = strpos($currentUrl, '/pedido/') !== false;
+?>
+
+<?php if (!$isPedido): ?>
 <div class="container-fluid dashboard-container px-4">
+<?php endif; ?>
