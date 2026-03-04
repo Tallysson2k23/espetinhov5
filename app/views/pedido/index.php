@@ -184,16 +184,16 @@
   <div class="modal-dialog">
     <div class="modal-content">
 
-      <div class="modal-header">
-        <h5 class="modal-title">Observação do Produto</h5>
-        <button type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"></button>
-      </div>
+<div class="modal-header bg-dark text-white">
+    <h5 class="modal-title">Observação do Produto</h5>
+    <button type="button"
+            class="btn-close btn-close-white"
+            data-bs-dismiss="modal"></button>
+</div>
 
       <div class="modal-body">
 
-        <strong id="produtoObsNome"></strong>
+        <h5 id="produtoObsNome" style="color:#000; font-weight:600;"></h5>
 
         <textarea
             id="produtoObservacao"
