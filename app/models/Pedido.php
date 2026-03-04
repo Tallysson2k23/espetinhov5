@@ -18,17 +18,18 @@ class Pedido extends Model {
         return $stmt->fetch(PDO::FETCH_ASSOC)['id'];
     }
 
-    public function inserirItem($pedido_id, $produto_id, $quantidade, $preco) {
+    public function inserirItem($pedido_id, $produto_id, $quantidade, $preco, $observacao = null) {
 
-        $sql = "INSERT INTO itens_pedido 
-                (pedido_id, produto_id, quantidade, preco_unitario)
-                VALUES (:pedido_id, :produto_id, :quantidade, :preco)";
+       $sql = "INSERT INTO itens_pedido 
+        (pedido_id, produto_id, quantidade, preco_unitario, observacao)
+        VALUES (:pedido_id, :produto_id, :quantidade, :preco, :observacao)";
 
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue(':pedido_id', $pedido_id);
         $stmt->bindValue(':produto_id', $produto_id);
         $stmt->bindValue(':quantidade', $quantidade);
         $stmt->bindValue(':preco', $preco);
+        $stmt->bindValue(':observacao', $observacao);
         $stmt->execute();
     }
 
@@ -85,6 +86,7 @@ public function listarItensComGrupo($pedido_id) {
                 ip.quantidade,
                 p.nome,
                 g.impressora
+                ip.observacao
             FROM itens_pedido ip
             JOIN produtos p ON p.id = ip.produto_id
             JOIN grupos g ON g.id = p.grupo_id

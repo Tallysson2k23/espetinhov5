@@ -103,14 +103,19 @@ public function salvar() {
         $_SESSION['usuario_id']
     );
 
-    foreach ($itens as $item) {
-        $pedidoModel->inserirItem(
-            $pedido_id,
-            $item['id'],
-            $item['quantidade'],
-            $item['preco']
-        );
-    }
+foreach ($itens as $item) {
+
+    $observacao = $item['observacao'] ?? null;
+
+    $pedidoModel->inserirItem(
+        $pedido_id,
+        $item['id'],
+        $item['quantidade'],
+        $item['preco'],
+        $observacao
+    );
+
+}
 
     // =========================
     // 2️⃣ Buscar mesa
@@ -201,6 +206,8 @@ public function fechar() {
     require_once __DIR__ . '/../models/Pedido.php';
     require_once __DIR__ . '/../models/Mesa.php';
     require_once __DIR__ . '/../../config/database.php';
+    require_once __DIR__ . '/../services/CupomService.php';
+    require_once __DIR__ . '/../services/ImpressoraService.php';
 
     $dados = json_decode(file_get_contents("php://input"), true);
 
@@ -214,7 +221,9 @@ public function fechar() {
 
     $db = Database::getInstance()->getConnection();
 
+    // =========================
     // Atualizar atendimento
+    // =========================
     $sql = "UPDATE atendimentos
             SET forma_pagamento = :forma_pagamento,
                 valor_total = :total,
@@ -229,31 +238,92 @@ public function fechar() {
     $stmt->bindValue(':id', $atendimento_id);
     $stmt->execute();
 
-    // Buscar mesa
+    // =========================
+    // Buscar mesa vinculada
+    // =========================
     $sqlMesa = "SELECT mesa_id FROM atendimentos WHERE id = :id";
     $stmtMesa = $db->prepare($sqlMesa);
     $stmtMesa->bindValue(':id', $atendimento_id);
     $stmtMesa->execute();
     $mesa_id = $stmtMesa->fetch(PDO::FETCH_ASSOC)['mesa_id'];
 
+    // =========================
     // Liberar mesa
+    // =========================
     $mesaModel->atualizarStatus($mesa_id, 'livre');
 
-    // Zerar timer da mesa
-$sqlReset = "UPDATE mesas
-             SET inicio_atendimento = NULL
-             WHERE id = :mesa_id";
+    // =========================
+    // Zerar timer
+    // =========================
+    $sqlReset = "UPDATE mesas
+                 SET inicio_atendimento = NULL
+                 WHERE id = :mesa_id";
 
-$stmtReset = $db->prepare($sqlReset);
-$stmtReset->bindValue(':mesa_id', $mesa_id);
-$stmtReset->execute();
+    $stmtReset = $db->prepare($sqlReset);
+    $stmtReset->bindValue(':mesa_id', $mesa_id);
+    $stmtReset->execute();
 
+    // =========================
+    // Buscar numero da mesa
+    // =========================
+    $sqlMesaNumero = "SELECT numero FROM mesas WHERE id = :id";
+    $stmtMesaNumero = $db->prepare($sqlMesaNumero);
+    $stmtMesaNumero->bindValue(':id', $mesa_id);
+    $stmtMesaNumero->execute();
+    $mesaNumero = $stmtMesaNumero->fetch(PDO::FETCH_ASSOC)['numero'];
+
+    // =========================
+    // Buscar todos os itens do atendimento
+    // =========================
+    $sqlItens = "SELECT 
+                    ip.quantidade,
+                    p.nome,
+                    ip.preco_unitario
+                 FROM itens_pedido ip
+                 JOIN pedidos pe ON pe.id = ip.pedido_id
+                 JOIN produtos p ON p.id = ip.produto_id
+                 WHERE pe.atendimento_id = :id";
+
+    $stmtItens = $db->prepare($sqlItens);
+    $stmtItens->bindValue(':id', $atendimento_id);
+    $stmtItens->execute();
+    $itens = $stmtItens->fetchAll(PDO::FETCH_ASSOC);
+
+    // =========================
+    // Gerar cupom fechamento
+    // =========================
+    $conteudo = CupomService::gerarFechamento(
+        $mesaNumero,
+        $atendimento_id,
+        $itens,
+        $total,
+        $forma_pagamento
+    );
+
+    // =========================
+    // Buscar impressora 3 (Bebidas)
+    // =========================
+    $sqlImp = "SELECT * FROM impressoras WHERE id = 3 LIMIT 1";
+    $stmtImp = $db->prepare($sqlImp);
+    $stmtImp->execute();
+    $impressora = $stmtImp->fetch(PDO::FETCH_ASSOC);
+
+    if ($impressora) {
+        ImpressoraService::imprimir(
+            $impressora['ip'],
+            $impressora['porta'],
+            $conteudo
+        );
+    }
+
+    // =========================
+    // Retorno para JS
+    // =========================
     echo json_encode([
         "status" => "ok",
         "total" => $total
     ]);
 }
-
 
 
 }

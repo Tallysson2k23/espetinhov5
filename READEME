@@ -13,7 +13,8 @@ espetinhov5/
 │   │   ├── Grupo.php
 │   │   ├── Mesa.php
 │   │   ├── Pedido.php
-│   │   ├── Atendimento.php
+│   │   ├── Atendimento.php Impressora.php
+│   │   ├── Impressora.php
 │   │   
 │   ├── services/ 
 │   │   ├── ImpressoraService.php
@@ -60,7 +61,11 @@ espetinhov5/
 │       ├── img/
 │           ├── logo.png
 │       ├── css/
-│           ├── tema-escuro.php
+│           ├── tema-escuro.css
+│           ├── pdv.css
+│           ├── admin.css
+│           ├── auth.css
+│           ├── dashboard.css
 │
 ├── storage/
 │
@@ -91,3 +96,27 @@ Ajuste IP das impressoras na tabela impressoras
 Confirme que todas estão com porta 9100
 
 Todas devem estar na mesma rede do PC
+
+
+✅ A porta 9100 é padrão da ELGIN i8
+
+Se não funcionar, pode testar:
+
+9100
+
+8008
+
+9101
+
+Mas normalmente é 9100.
+
+telnet 192.168.68.45 9100
+Se abrir tela preta = porta aberta = ok
+
+Se não conectar = problema de rede
+
+prompt:
+resuma tudo que falamos ate agora em 
+tópicos importantes, para eu continuar 
+em outra conversa, sem bem especifico 
+em cada ponto importante.

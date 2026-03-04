@@ -1,0 +1,37 @@
+/* ============================
+   ADMIN
+============================ */
+
+.admin-wrapper {
+    padding: 30px;
+}
+
+.admin-wrapper h2 {
+    margin-bottom: 20px;
+}
+
+.admin-wrapper form input,
+.admin-wrapper form select {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #fff;
+}
+
+.admin-wrapper table {
+    background: #1e1e1e;
+    color: #fff;
+}
+
+.admin-wrapper table th {
+    background: #2a2a2a;
+}
+
+.admin-wrapper .btn-warning {
+    background: #facc15;
+    border: none;
+}
+
+.admin-wrapper .btn-secondary {
+    background: #6b7280;
+    border: none;
+}

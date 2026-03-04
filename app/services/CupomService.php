@@ -36,9 +36,17 @@ class CupomService {
                 $nome = substr($nome, 0, 38);
             }
 
-            $texto .= str_pad($qtd, 4)
-                    . " "
-                    . $nome . "\n";
+        $texto .= str_pad($qtd, 4)
+        . " "
+        . $nome . "\n";
+
+// imprimir observação se existir
+if (!empty($item['observacao'])) {
+
+    $obs = strtoupper($item['observacao']);
+
+    $texto .= "     * " . $obs . "\n";
+}
         }
 
         $texto .= $linha;
@@ -53,4 +61,72 @@ class CupomService {
 
         return $texto;
     }
+
+public static function gerarFechamento(
+    $mesa,
+    $atendimento,
+    $itens,
+    $total,
+    $forma_pagamento
+) {
+
+    $largura = 48;
+    $linha = str_repeat("-", $largura) . "\n";
+
+    $texto  = "\x1B\x40";        // Inicializa impressora
+    $texto .= "\x1B\x61\x01";    // Centralizar
+    $texto .= "COMPROVANTE\n";
+    $texto .= "\x1B\x61\x00";    // Alinhar esquerda
+
+    $texto .= $linha;
+    $texto .= "Mesa: " . $mesa . "\n";
+    $texto .= "Atendimento: " . $atendimento . "\n";
+    $texto .= $linha;
+
+    $texto .= "Qtd  Produto              Vl.Unit   Total\n";
+    $texto .= $linha;
+
+    foreach ($itens as $item) {
+
+        $qtd = $item['quantidade'];
+        $nome = strtoupper($item['nome']);
+        $valor = number_format($item['preco_unitario'], 2, ',', '.');
+        $subtotal = number_format($item['quantidade'] * $item['preco_unitario'], 2, ',', '.');
+
+        $texto .= str_pad($qtd, 4);
+        $texto .= str_pad(substr($nome, 0, 18), 20);
+        $texto .= str_pad($valor, 8, " ", STR_PAD_LEFT);
+        $texto .= str_pad($subtotal, 8, " ", STR_PAD_LEFT);
+        $texto .= "\n";
+    }
+
+    $texto .= $linha;
+
+    // TOTAL CENTRALIZADO EM DESTAQUE
+    $texto .= "\x1B\x61\x01"; // centraliza
+    $texto .= "\x1B\x45\x01"; // negrito ON
+    $texto .= "TOTAL: R$ " . number_format($total, 2, ',', '.') . "\n";
+    $texto .= "\x1B\x45\x00"; // negrito OFF
+    $texto .= "\x1B\x61\x00"; // volta esquerda
+
+    $texto .= $linha;
+
+    $texto .= "Forma Pagamento: " . strtoupper($forma_pagamento) . "\n\n";
+
+    $texto .= "Obrigado, volte sempre!\n";
+    $texto .= "Atendente: " . strtoupper($_SESSION['usuario']) . "\n";
+    $texto .= "Cod. Venda: " . $atendimento . "\n\n";
+
+    $texto .= "NAO E DOCUMENTO FISCAL\n";
+    $texto .= "OPR: " . strtoupper($_SESSION['usuario']) . "\n";
+    $texto .= "Data/Hora: " . date("d/m/Y H:i:s") . "\n";
+
+    $texto .= "\n\n\n";
+
+    return $texto;
+}
+
+
+
+
 }

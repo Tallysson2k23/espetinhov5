@@ -1,9 +1,93 @@
 let carrinho = [];
 let total = 0;
 
+let produtoTemp = null;
+
+/* ==============================
+   FUNÇÃO DE FILTRO DE BUSCA
+============================== */
+function aplicarFiltroBusca() {
+
+    const input = document.getElementById("inputBuscaProduto");
+    if (!input) return;
+
+    const termo = input.value.toLowerCase();
+
+    document.querySelectorAll(".produto-card").forEach(card => {
+
+        const texto = card.innerText.toLowerCase();
+
+        if (texto.includes(termo)) {
+            card.style.display = "";
+        } else {
+            card.style.display = "none";
+        }
+
+    });
+
+}
+
+function abrirObsProduto(id, nome, preco) {
+
+    produtoTemp = { id, nome, preco };
+
+    document.getElementById("produtoObsNome").innerText = nome;
+
+    document.getElementById("produtoObservacao").value = "";
+
+    let modal = new bootstrap.Modal(
+        document.getElementById("modalObsProduto")
+    );
+
+    modal.show();
+}
+
+function confirmarObsProduto() {
+
+    let obs = document.getElementById("produtoObservacao").value;
+
+    adicionarProduto(
+        produtoTemp.id,
+        produtoTemp.nome,
+        produtoTemp.preco,
+        obs
+    );
+
+    let modal = bootstrap.Modal.getInstance(
+        document.getElementById("modalObsProduto")
+    );
+
+    modal.hide();
+}
+
+/* ==============================
+   ATIVAR BUSCA (UMA VEZ)
+============================== */
+document.addEventListener("DOMContentLoaded", function () {
+
+    const input = document.getElementById("inputBuscaProduto");
+
+    if (input) {
+        input.addEventListener("input", aplicarFiltroBusca);
+    }
+
+});
+
+/* ==============================
+   CARREGAR PRODUTOS POR GRUPO
+============================== */
+
 document.querySelectorAll(".grupo-btn").forEach(btn => {
 
     btn.addEventListener("click", function() {
+
+        // remove ativo de todos
+        document.querySelectorAll(".grupo-btn").forEach(b => 
+            b.classList.remove("ativo")
+        );
+
+        // adiciona ativo no clicado
+        this.classList.add("ativo");
 
         let grupoId = this.dataset.id;
 
@@ -16,34 +100,38 @@ document.querySelectorAll(".grupo-btn").forEach(btn => {
 
                 produtos.forEach(prod => {
 
-let imagem = prod.imagem 
-    ? "/espetinhov5/public/uploads/" + prod.imagem 
-    : "https://via.placeholder.com/100x100?text=Sem+Imagem";
+                    let imagem = prod.imagem 
+                        ? "/espetinhov5/public/uploads/" + prod.imagem 
+                        : "https://via.placeholder.com/100x100?text=Sem+Imagem";
 
-area.innerHTML += `
-    <div class="card mb-2 produto-card"
-         onclick="adicionarProduto(${prod.id}, '${prod.nome}', ${prod.preco})"
-         style="cursor:pointer">
+                    let card = document.createElement("div");
+                    card.className = "card mb-2 produto-card";
+                    card.style.cursor = "pointer";
 
-        <div class="row g-0 align-items-center">
+                   card.onclick = function() {
+    abrirObsProduto(prod.id, prod.nome, prod.preco);
+};
 
-            <div class="col-4">
-                <img src="${imagem}"
-                     class="img-fluid rounded-start"
-                     style="height:80px; object-fit:cover;">
+                    card.innerHTML = `
+    <div class="produto-card-inner">
+        <img src="${imagem}" class="produto-img">
+
+        <div class="produto-info">
+            <div class="produto-nome">${prod.nome}</div>
+            <div class="produto-preco">
+                R$ ${parseFloat(prod.preco).toFixed(2)}
             </div>
-
-            <div class="col-8">
-                <div class="card-body p-2">
-                    <h6 class="mb-1">${prod.nome}</h6>
-                    <strong>R$ ${parseFloat(prod.preco).toFixed(2)}</strong>
-                </div>
-            </div>
-
         </div>
     </div>
 `;
+
+                    area.appendChild(card);
+
                 });
+
+                /* IMPORTANTE:
+                   Reaplica filtro após carregar grupo */
+                aplicarFiltroBusca();
 
             });
 
@@ -51,14 +139,25 @@ area.innerHTML += `
 
 });
 
-function adicionarProduto(id, nome, preco) {
+
+/* ==============================
+   CARRINHO
+============================== */
+
+function adicionarProduto(id, nome, preco, observacao = "") {
 
     let existente = carrinho.find(item => item.id === id);
 
     if (existente) {
         existente.quantidade++;
     } else {
-        carrinho.push({id, nome, preco, quantidade: 1});
+        carrinho.push({
+    id,
+    nome,
+    preco,
+    quantidade: 1,
+    observacao
+});
     }
 
     calcularTotal();
@@ -92,18 +191,33 @@ function atualizarCarrinho() {
     carrinho.forEach((item, index) => {
 
         lista.innerHTML += `
-            <li class="list-group-item d-flex justify-content-between">
-                ${item.quantidade}x ${item.nome}
-                <button class="btn btn-sm btn-danger"
-                        onclick="removerItem(${index})">
-                    -
-                </button>
-            </li>
-        `;
+<li class="list-group-item d-flex justify-content-between">
+
+    <div>
+        ${item.quantidade}x ${item.nome}
+
+        <br>
+
+        <small style="color:gray">
+            ${item.observacao ? "* " + item.observacao : ""}
+        </small>
+    </div>
+
+    <button class="btn btn-sm btn-danger"
+            onclick="removerItem(${index})">
+        -
+    </button>
+
+</li>
+`;
     });
 
     document.getElementById("total").innerText = total.toFixed(2);
 }
+
+/* ==============================
+   ENVIAR PEDIDO
+============================== */
 
 function enviarPedido(atendimento_id) {
 
@@ -112,39 +226,39 @@ function enviarPedido(atendimento_id) {
         return;
     }
 
-fetch("/espetinhov5/public/pedido/salvar", {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-        atendimento_id: atendimento_id,
-        itens: carrinho
+    fetch("/espetinhov5/public/pedido/salvar", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            atendimento_id: atendimento_id,
+            itens: carrinho
+        })
     })
-})
+    .then(response => response.json())
+    .then(data => {
 
+        if (data.status === "ok") {
 
-.then(response => response.json())
-.then(data => {
+            sessionStorage.setItem(
+                "msg_sucesso",
+                "Pedido enviado para cozinha!"
+            );
 
-    if (data.status === "ok") {
+            window.location.href = "/espetinhov5/public/dashboard";
+        }
 
-        sessionStorage.setItem(
-            "msg_sucesso",
-            "Pedido enviado para cozinha!"
-        );
-
-        // Redireciona para dashboard
-        window.location.href = "/espetinhov5/public/dashboard";
-    }
-
-})
-.catch(error => {
-    console.error("Erro ao enviar pedido:", error);
-});
-
+    })
+    .catch(error => {
+        console.error("Erro ao enviar pedido:", error);
+    });
 
 }
+
+/* ==============================
+   FECHAMENTO
+============================== */
 
 function abrirFechamento() {
 
@@ -172,16 +286,16 @@ function confirmarFechamento(atendimento_id) {
     .then(res => res.json())
     .then(res => {
 
-if (res.status === "ok") {
+        if (res.status === "ok") {
 
-sessionStorage.setItem(
-    "msg_sucesso",
-    "Mesa fechada! Total: R$ " +
-    parseFloat(res.total).toFixed(2)
-);
+            sessionStorage.setItem(
+                "msg_sucesso",
+                "Mesa fechada! Total: R$ " +
+                parseFloat(res.total).toFixed(2)
+            );
 
-window.location.href = "/espetinhov5/public/dashboard";
-}
+            window.location.href = "/espetinhov5/public/dashboard";
+        }
 
     });
 

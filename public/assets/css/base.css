@@ -1,0 +1,18 @@
+/* ============================
+   BASE GLOBAL - ESPETINHO
+============================ */
+
+body {
+    margin: 0;
+    background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+    font-family: 'Segoe UI', sans-serif;
+    color: #f1f5f9;
+}
+
+a {
+    text-decoration: none;
+}
+
+* {
+    box-sizing: border-box;
+}
