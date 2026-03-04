@@ -21,6 +21,7 @@
 
         <thead>
             <tr>
+                <th>Hora</th>
                 <th>Qtd</th>
                 <th>Produto</th>
                 <th>Observação</th>
@@ -33,16 +34,22 @@
         <?php foreach ($itens as $item): ?>
 
             <tr>
-                <td><?= $item['quantidade'] ?></td>
 
-                <td><?= $item['nome'] ?></td>
+<td>
+<?= date('H:i', strtotime($item['created_at'])) ?>
+</td>
 
-                <td><?= $item['observacao'] ?></td>
+<td><?= $item['quantidade'] ?></td>
 
-                <td>
-                    R$ <?= number_format($item['preco_unitario'],2,',','.') ?>
-                </td>
-            </tr>
+<td><?= $item['nome'] ?></td>
+
+<td><?= $item['observacao'] ?></td>
+
+<td>
+R$ <?= number_format($item['preco_unitario'],2,',','.') ?>
+</td>
+
+</tr>
 
         <?php endforeach; ?>
 

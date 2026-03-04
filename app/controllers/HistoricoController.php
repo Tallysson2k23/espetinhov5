@@ -59,14 +59,16 @@ class HistoricoController {
         $atendimento = $stmt->fetch(PDO::FETCH_ASSOC);
 
         $sqlItens = "SELECT 
-                        ip.quantidade,
-                        ip.preco_unitario,
-                        ip.observacao,
-                        p.nome
-                    FROM itens_pedido ip
-                    JOIN pedidos pe ON pe.id = ip.pedido_id
-                    JOIN produtos p ON p.id = ip.produto_id
-                    WHERE pe.atendimento_id = :id";
+                ip.quantidade,
+                ip.preco_unitario,
+                ip.observacao,
+                p.nome,
+                pe.created_at
+            FROM itens_pedido ip
+            JOIN pedidos pe ON pe.id = ip.pedido_id
+            JOIN produtos p ON p.id = ip.produto_id
+            WHERE pe.atendimento_id = :id
+            ORDER BY pe.created_at ASC";
 
         $stmtItens = $db->prepare($sqlItens);
         $stmtItens->bindValue(':id', $id);
