@@ -236,10 +236,10 @@ function enviarPedido(atendimento_id) {
             itens: carrinho
         })
     })
-    .then(response => response.json())
-    .then(data => {
+    .then(res => res.json())
+    .then(res => {
 
-        if (data.status === "ok") {
+        if (res.status === "ok") {
 
             sessionStorage.setItem(
                 "msg_sucesso",
@@ -247,15 +247,20 @@ function enviarPedido(atendimento_id) {
             );
 
             window.location.href = "/espetinhov5/public/dashboard";
+
+        } else {
+
+            alert("Erro ao enviar pedido.");
+
         }
 
     })
     .catch(error => {
         console.error("Erro ao enviar pedido:", error);
+        alert("Erro ao enviar pedido.");
     });
 
 }
-
 /* ==============================
    FECHAMENTO
 ============================== */

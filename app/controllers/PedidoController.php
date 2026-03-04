@@ -72,11 +72,13 @@ public function apiProdutos($grupo_id) {
     header('Content-Type: application/json');
     echo json_encode($produtos);
 }
-
 public function salvar() {
+
+    header('Content-Type: application/json');
 
     if (!isset($_SESSION['usuario'])) {
         http_response_code(403);
+        echo json_encode(["status" => "erro", "msg" => "Usuário não autenticado"]);
         exit;
     }
 
@@ -88,8 +90,18 @@ public function salvar() {
 
     $dados = json_decode(file_get_contents("php://input"), true);
 
-    $atendimento_id = $dados['atendimento_id'];
-    $itens = $dados['itens'];
+    if (!$dados) {
+        echo json_encode(["status" => "erro", "msg" => "Dados inválidos"]);
+        exit;
+    }
+
+    $atendimento_id = $dados['atendimento_id'] ?? null;
+    $itens = $dados['itens'] ?? [];
+
+    if (!$atendimento_id || empty($itens)) {
+        echo json_encode(["status" => "erro", "msg" => "Pedido vazio"]);
+        exit;
+    }
 
     $pedidoModel = new Pedido();
     $mesaModel = new Mesa();
@@ -103,19 +115,18 @@ public function salvar() {
         $_SESSION['usuario_id']
     );
 
-foreach ($itens as $item) {
+    foreach ($itens as $item) {
 
-    $observacao = $item['observacao'] ?? null;
+        $observacao = $item['observacao'] ?? null;
 
-    $pedidoModel->inserirItem(
-        $pedido_id,
-        $item['id'],
-        $item['quantidade'],
-        $item['preco'],
-        $observacao
-    );
-
-}
+        $pedidoModel->inserirItem(
+            $pedido_id,
+            $item['id'],
+            $item['quantidade'],
+            $item['preco'],
+            $observacao
+        );
+    }
 
     // =========================
     // 2️⃣ Buscar mesa
@@ -128,12 +139,18 @@ foreach ($itens as $item) {
     $stmtMesa = $db->prepare($sqlMesa);
     $stmtMesa->bindValue(':id', $atendimento_id);
     $stmtMesa->execute();
+
     $mesa = $stmtMesa->fetch(PDO::FETCH_ASSOC);
+
+    if (!$mesa) {
+        echo json_encode(["status" => "erro", "msg" => "Mesa não encontrada"]);
+        exit;
+    }
 
     $mesa_id = $mesa['id'];
     $mesaNumero = $mesa['numero'];
 
-    // Marcar ocupada
+    // Marcar mesa ocupada
     $mesaModel->atualizarStatus($mesa_id, 'ocupada');
 
     // Iniciar timer se NULL
@@ -162,6 +179,7 @@ foreach ($itens as $item) {
     $impressoras = $stmtImp->fetchAll(PDO::FETCH_ASSOC);
 
     $impressorasMap = [];
+
     foreach ($impressoras as $imp) {
         $impressorasMap[$imp['id']] = $imp;
     }
@@ -171,7 +189,9 @@ foreach ($itens as $item) {
     // =========================
     foreach ($gruposImpressao as $impressoraId => $itensGrupo) {
 
-        if (!isset($impressorasMap[$impressoraId])) continue;
+        if (!isset($impressorasMap[$impressoraId])) {
+            continue;
+        }
 
         $imp = $impressorasMap[$impressoraId];
 
@@ -183,7 +203,6 @@ foreach ($itens as $item) {
             $itensGrupo
         );
 
-        // Timeout de 1 segundo para não travar
         ImpressoraService::imprimir(
             $imp['ip'],
             $imp['porta'],
@@ -191,11 +210,17 @@ foreach ($itens as $item) {
         );
     }
 
+    // =========================
+    // 5️⃣ Resposta JSON limpa
+    // =========================
     echo json_encode([
-    "status" => "ok",
-    "mensagem" => "Pedido enviado para cozinha!"
-]);
+        "status" => "ok"
+    ]);
+
+    exit;
 }
+
+
 public function fechar() {
 
     if (!isset($_SESSION['usuario']) || $_SESSION['nivel'] != 'admin') {

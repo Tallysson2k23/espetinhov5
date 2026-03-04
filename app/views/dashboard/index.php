@@ -47,6 +47,10 @@
             Impressoras
         </a>
 
+        <a href="/espetinhov5/public/historico" class="admin-item">
+            Histórico
+        </a>
+
     </div>
 <?php endif; ?>
 

@@ -6,6 +6,7 @@ espetinhov5/
 │   │   ├── DashboardController.php
 │   │   ├── PedidoController.php
 │   │   ├── AdminController.php
+│   │   ├── HistoricoController.php
 │   │
 │   ├── models/
 │   │   ├── Usuario.php
@@ -30,6 +31,11 @@ espetinhov5/
 │   │   │
 │   │   ├── dashboard/
 │   │   │   ├── index.php
+│   │   ├
+│   │   ├── historico/
+│   │   │   ├── index.php
+│   │   │   ├── ver.php
+│   │   │   
 │   │   │
 │   │   ├── pedido/
 │   │   │   ├── modal.php
