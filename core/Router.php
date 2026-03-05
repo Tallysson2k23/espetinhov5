@@ -30,6 +30,18 @@ if ($url[0] == 'pedido' && $url[1] == 'fechar') {
     return;
 }
 
+
+if ($url[0] == 'pedido' && $url[1] == 'total') {
+
+    require_once __DIR__ . '/../app/controllers/PedidoController.php';
+
+    $controller = new PedidoController();
+
+    $controller->totalMesa($url[2]);
+
+    return;
+}
+
         $controllerName = ucfirst($url[0]) . 'Controller';
         $method = $url[1] ?? 'index';
 

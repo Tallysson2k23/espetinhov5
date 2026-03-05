@@ -2,275 +2,342 @@
    PDV - LAYOUT COMPLETO
 ============================ */
 
-.pdv-old {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    padding: 15px;
-}
-
-/* HEADER */
-
-.pdv-top {
-    background: rgba(255,94,0,0.08);
-    border: 1px solid rgba(255,94,0,0.3);
-    border-radius: 12px;
-    padding: 12px 18px;
-    margin-bottom: 15px;
-    flex-shrink: 0;
-}
-
-.pdv-right {
-    display: flex;
-    gap: 30px;
-}
-
-/* GRUPOS */
-
-.pdv-grupos-top {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    margin-bottom: 15px;
-    flex-shrink: 0;
-}
-
-.grupo-btn {
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: 1px solid rgba(255,94,0,0.5);
-    background: transparent;
-    color: #ff5e00;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-    white-space: nowrap;
-}
-
-.grupo-btn:hover {
-    background: #ff5e00;
-    color: #fff;
-}
-
-.grupo-btn.ativo {
-    background: linear-gradient(135deg, #ff5e00, #ff2e00);
-    color: #fff;
-    border: none;
-}
-
-/* ÁREA PRINCIPAL */
-
-.pdv-main {
-    flex: 1;
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 20px;
-
-    overflow: hidden;
-    min-height: 0; /* ESSENCIAL */
+.pdv-old{
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    padding:15px;
 }
 
 /* ============================
-   GRID PRODUTOS 4 COLUNAS
+   HEADER
 ============================ */
 
-#produtos-area {
-    flex: 1;
-
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-
-    overflow-y: auto; /* SCROLL AQUI */
-    min-height: 0;    /* ESSENCIAL */
-}
-/* ============================
-   CARD PRODUTO PADRÃO GRID
-============================ */
-
-.produto-card {
-    background: #f4f4f4;
-    border-radius: 8px;
-    padding: 8px;
-    cursor: pointer;
-    transition: 0.2s ease;
-
-    display: flex;
-    flex-direction: column;
+.pdv-top{
+    background:rgba(255,94,0,0.08);
+    border:1px solid rgba(255,94,0,0.3);
+    border-radius:12px;
+    padding:12px 18px;
+    margin-bottom:12px;
+    flex-shrink:0;
 }
 
-.produto-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.2);
-}
-
-/* CARRINHO */
-
-.pdv-carrinho-area {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,94,0,0.2);
-    border-radius: 10px;
-    padding: 12px;
-
-    display: flex;
-    flex-direction: column;
-
-    height: 100%;
-    overflow: hidden;
-}
-#carrinho {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0;
-    list-style: none;
-    margin: 0;
-
-    min-height: 0; /* MUITO IMPORTANTE */
-}
-
-#carrinho li {
-    padding: 8px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    display: flex;
-    justify-content: space-between;
-}
-
-/* BLOCO PEDIDOS ENVIADOS */
-
-.pedidos-enviados {
-    flex: 1;
-    overflow-y: auto;
-    min-height: 0;
-    margin-top: 10px;
-}
-
-.pedido-bloco {
-    background: rgba(255,255,255,0.04);
-    padding: 8px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-}
-
-/* RODAPÉ */
-
-.pdv-footer {
-    background: rgba(255,94,0,0.08);
-    border: 1px solid rgba(255,94,0,0.3);
-    border-radius: 12px;
-    padding: 15px;
-    margin-top: 15px;
-    flex-shrink: 0;
-}
-
-.pdv-total-box {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 10px;
+.pdv-right{
+    display:flex;
+    gap:30px;
 }
 
 /* ============================
-   BOTÕES PDV CORRIGIDO
+   GRUPOS
 ============================ */
 
-.pdv-buttons {
-    display: flex;
-    gap: 12px;
+.pdv-grupos-top{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    margin-bottom:12px;
+    flex-shrink:0;
 }
 
-.pdv-btn {
-    flex: 1;
-    padding: 12px;
-    border-radius: 10px;
-    font-weight: 600;
-    text-align: center;
-    cursor: pointer;
-    text-decoration: none;
-    border: none;
-    transition: 0.2s ease;
-    display: inline-block;
+.grupo-btn{
+    padding:8px 14px;
+    border-radius:18px;
+    border:1px solid rgba(255,94,0,0.5);
+    background:transparent;
+    color:#ff5e00;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
 }
 
-.pdv-produtos-area {
-    display: flex;
-    flex-direction: column;
-
-    overflow: hidden;
-    min-height: 0; /* ESSENCIAL */
+.grupo-btn.ativo{
+    background:linear-gradient(135deg,#ff5e00,#ff2e00);
+    color:#fff;
+    border:none;
 }
 
-/* ENVIAR - VERDE */
-.pdv-btn-enviar {
-    background: linear-gradient(135deg, #16a34a, #15803d);
-    color: #ffffff;
+/* ============================
+   ÁREA PRINCIPAL
+============================ */
+
+.pdv-main{
+    flex:1;
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:15px;
+    overflow:hidden;
 }
 
-.pdv-btn-enviar:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(22,163,74,0.4);
+/* ============================
+   PRODUTOS
+============================ */
+
+.pdv-produtos-area{
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
 }
 
-/* FECHAR - VERMELHO */
-.pdv-btn-fechar {
-    background: linear-gradient(135deg, #dc2626, #b91c1c);
-    color: #ffffff;
+#produtos-area{
+    flex:1;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+    overflow-y:auto;
+    width:100%;
 }
 
-.pdv-btn-fechar:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(220,38,38,0.4);
+/* ============================
+   CARD PRODUTO
+============================ */
+
+.produto-card{
+    background:#f4f4f4;
+    border-radius:10px;
+    padding:6px;
+    cursor:pointer;
+    transition:0.2s;
+    display:flex;
+    flex-direction:column;
 }
 
-/* VOLTAR - BRANCO */
-.btn-voltar {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.2);
-    color: #ffffff;
+.produto-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 6px 14px rgba(0,0,0,0.2);
 }
 
-.btn-voltar:hover {
-    background: rgba(255,255,255,0.15);
+/* imagem padronizada */
+
+.produto-card img{
+    width:100%;
+    height:120px;
+    object-fit:cover;
+    border-radius:6px;
 }
 
-/* MOBILE */
-
-@media (max-width: 768px) {
-    .pdv-main {
-        grid-template-columns: 1fr;
-    }
+.produto-card h6{
+    font-size:13px;
+    margin:6px 0 2px 0;
+    color:#222;
 }
 
-.produto-card img {
-    width: 100%;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 6px;
-}
-.produto-card h6 {
-    font-size: 13px;
-    margin: 6px 0 2px 0;
-    color: #222;
+.produto-card strong{
+    font-size:13px;
+    color:#ff5e00;
 }
 
-.produto-card strong {
-    font-size: 13px;
-    color: #ff5e00;
+/* ============================
+   CARRINHO
+============================ */
+
+.pdv-carrinho-area{
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,94,0,0.2);
+    border-radius:10px;
+    padding:10px;
+
+    display:flex;
+    flex-direction:column;
+
+    height:100%;
+    overflow:hidden;
 }
 
-@media (max-width: 1200px) {
-    #produtos-area {
-        grid-template-columns: repeat(3, 1fr);
-    }
+#carrinho{
+    flex:1;
+    overflow-y:auto;
+    padding:0;
+    list-style:none;
+    margin:0;
 }
 
-@media (max-width: 768px) {
-    #produtos-area {
-        grid-template-columns: repeat(2, 1fr);
-    }
+#carrinho li{
+    padding:8px;
+    border-bottom:1px solid rgba(255,255,255,0.1);
+    display:flex;
+    justify-content:space-between;
 }
 
-@media (max-width: 480px) {
-    #produtos-area {
-        grid-template-columns: repeat(1, 1fr);
-    }
+/* ============================
+   PEDIDOS ENVIADOS
+============================ */
+
+.pedidos-enviados{
+    flex:1;
+    overflow-y:auto;
+    margin-top:8px;
+}
+
+.pedido-bloco{
+    background:rgba(255,255,255,0.04);
+    padding:8px;
+    border-radius:8px;
+    margin-bottom:8px;
+}
+
+/* ============================
+   RODAPÉ
+============================ */
+
+.pdv-footer{
+    background:rgba(255,94,0,0.08);
+    border:1px solid rgba(255,94,0,0.3);
+    border-radius:12px;
+    padding:12px;
+    margin-top:10px;
+}
+
+.pdv-total-box{
+    font-size:18px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+/* ============================
+   BOTÕES
+============================ */
+
+.pdv-buttons{
+    display:flex;
+    gap:10px;
+}
+
+.pdv-btn{
+    flex:1;
+    padding:12px;
+    border-radius:10px;
+    font-weight:600;
+    text-align:center;
+    cursor:pointer;
+    border:none;
+}
+
+/* enviar */
+
+.pdv-btn-enviar{
+    background:linear-gradient(135deg,#16a34a,#15803d);
+    color:#fff;
+}
+
+/* fechar */
+
+.pdv-btn-fechar{
+    background:linear-gradient(135deg,#dc2626,#b91c1c);
+    color:#fff;
+}
+
+/* voltar */
+
+.btn-voltar{
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.2);
+    color:#fff;
+}
+
+/* ============================
+   RESPONSIVO
+============================ */
+
+/* NOTEBOOK */
+
+@media(max-width:1200px){
+
+#produtos-area{
+grid-template-columns:repeat(3,1fr);
+}
+
+}
+
+/* TABLET */
+
+@media(max-width:900px){
+
+.pdv-main{
+grid-template-columns:1fr;
+}
+
+.pdv-carrinho-area{
+order:2;
+}
+
+#produtos-area{
+grid-template-columns:repeat(2,1fr);
+}
+
+}
+
+/* CELULAR */
+
+@media(max-width:600px){
+
+.pdv-old{
+padding:8px;
+}
+
+#produtos-area{
+grid-template-columns:repeat(2,1fr);
+gap:8px;
+}
+
+.produto-card img{
+height:90px;
+}
+
+.produto-card h6{
+font-size:12px;
+}
+
+.pdv-buttons{
+flex-direction:column;
+}
+
+}
+
+/* ============================
+   MOBILE FIX PDV
+============================ */
+
+@media (max-width:900px){
+
+.pdv-main{
+grid-template-columns:1fr !important;
+}
+
+.pdv-carrinho-area{
+order:2;
+margin-top:10px;
+}
+
+#produtos-area{
+grid-template-columns:repeat(2,1fr) !important;
+gap:8px;
+}
+
+.produto-card img{
+height:95px !important;
+}
+
+}
+
+/* celular pequeno */
+
+@media (max-width:480px){
+
+#produtos-area{
+grid-template-columns:repeat(2,1fr) !important;
+}
+
+.produto-card{
+padding:6px;
+}
+
+.produto-card img{
+height:85px !important;
+}
+
+.produto-card h6{
+font-size:12px;
+}
+
 }

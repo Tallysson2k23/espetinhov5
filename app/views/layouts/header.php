@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Espetinho Central - V5</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="icon" type="image/x-icon" href="/espetinhov5/public/espetinho_central.ico">
 
@@ -38,6 +39,13 @@
 
         $isPedido = strpos($currentUrl, '/pedido') !== false;
     ?>
+
+
+<script>
+const BASE_URL = "<?= BASE_URL ?>";
+</script>
+
+
 
 </head>
 <body>

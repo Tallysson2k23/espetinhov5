@@ -350,5 +350,32 @@ public function fechar() {
     ]);
 }
 
+public function totalMesa($atendimento_id)
+{
+    header('Content-Type: application/json');
+
+    require_once __DIR__ . '/../../config/database.php';
+
+    $database = Database::getInstance();
+    $db = $database->getConnection();
+
+   $sql = "
+    SELECT 
+        COALESCE(SUM(ip.quantidade * ip.preco_unitario),0) as total
+    FROM pedidos p
+    JOIN itens_pedido ip ON ip.pedido_id = p.id
+    WHERE p.atendimento_id = :atendimento
+";
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindParam(':atendimento', $atendimento_id);
+    $stmt->execute();
+
+    $total = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    echo json_encode($total);
+}
+
+
 
 }

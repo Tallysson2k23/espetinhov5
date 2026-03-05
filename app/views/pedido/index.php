@@ -221,3 +221,13 @@
 
 
 <script src="/espetinhov5/public/js/pedido.js"></script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    carregarTotalMesa(<?= $atendimento_id ?>);
+
+});
+
+</script>

@@ -3,6 +3,8 @@ let total = 0;
 
 let produtoTemp = null;
 
+let totalMesa = 0;
+
 /* ==============================
    FUNÇÃO DE FILTRO DE BUSCA
 ============================== */
@@ -26,6 +28,7 @@ function aplicarFiltroBusca() {
     });
 
 }
+
 
 function abrirObsProduto(id, nome, preco) {
 
@@ -181,6 +184,8 @@ function calcularTotal() {
     carrinho.forEach(item => {
         total += item.preco * item.quantidade;
     });
+
+    atualizarTotalTela();
 }
 
 function atualizarCarrinho() {
@@ -303,5 +308,28 @@ function confirmarFechamento(atendimento_id) {
         }
 
     });
+
+}
+
+function carregarTotalMesa(atendimento_id) {
+
+    fetch("/espetinhov5/public/pedido/total/" + atendimento_id)
+        .then(res => res.json())
+        .then(res => {
+
+            totalMesa = parseFloat(res.total);
+
+            atualizarTotalTela();
+
+        });
+
+}
+
+function atualizarTotalTela(){
+
+    let totalFinal = totalMesa + total;
+
+    document.getElementById("total").innerText =
+        totalFinal.toFixed(2);
 
 }
