@@ -107,10 +107,16 @@
 
         <div class="pdv-buttons">
 
-            <button class="pdv-btn pdv-btn-enviar"
-                    onclick="enviarPedido(<?= $atendimento_id ?>)">
-                Enviar para cozinha
-            </button>
+            <button id="btnEnviarPedido"
+        class="pdv-btn pdv-btn-enviar"
+        onclick="enviarPedido(<?= $atendimento_id ?>)">
+    Enviar para cozinha
+</button>
+
+            <button class="pdv-btn"
+        onclick="abrirTransferencia()">
+    Transferir produtos
+</button>
 
             <?php if ($_SESSION['nivel'] == 'admin') : ?>
                 <button class="pdv-btn pdv-btn-fechar"
@@ -219,6 +225,59 @@
   </div>
 </div>
 
+<!-- MODAL TRANSFERIR PRODUTOS -->
+<div class="modal fade" id="modalTransferir" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-white">
+
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title">Transferir Produtos</h5>
+        <button type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <h6>Selecione os produtos</h6>
+
+        <div id="listaTransferencia">
+
+            <!-- produtos serão inseridos aqui via JS -->
+
+        </div>
+
+        <hr>
+
+        <label class="mt-2">Mesa destino</label>
+
+        <select id="mesaDestino"
+        class="form-select bg-dark text-white">
+        </select>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button class="btn btn-secondary"
+                data-bs-dismiss="modal">
+            Cancelar
+        </button>
+
+        <button class="btn btn-primary"
+                onclick="confirmarTransferencia()">
+            Transferir
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const ATENDIMENTO_ID = <?= $atendimento_id ?>;
+</script>
 
 <script src="/espetinhov5/public/js/pedido.js"></script>
 

@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../../core/Controller.php';
 require_once __DIR__ . '/../models/Mesa.php';
 require_once __DIR__ . '/../models/Atendimento.php';
+require_once __DIR__ . '/../models/Pedido.php';
 
 class PedidoController extends Controller {
 
@@ -374,6 +375,82 @@ public function totalMesa($atendimento_id)
     $total = $stmt->fetch(PDO::FETCH_ASSOC);
 
     echo json_encode($total);
+}
+
+
+public function itens($atendimento_id)
+{
+
+    $pedidoModel = new Pedido();
+
+    $itens = $pedidoModel->buscarItensAtendimento($atendimento_id);
+
+    header('Content-Type: application/json');
+
+    echo json_encode($itens);
+    exit;
+
+}
+
+
+public function mesas()
+{
+
+    require_once __DIR__ . '/../models/Mesa.php';
+
+    $mesaModel = new Mesa();
+
+    $mesas = $mesaModel->listarTodas();
+
+    header('Content-Type: application/json');
+
+    echo json_encode($mesas);
+    exit;
+
+}
+
+public function transferirItens()
+{
+
+    require_once __DIR__ . '/../models/Pedido.php';
+    require_once __DIR__ . '/../models/Mesa.php';
+
+$dados = json_decode(file_get_contents("php://input"), true);
+
+if (!$dados) {
+    $dados = $_POST;
+}
+
+$itens = $dados['itens'] ?? [];
+$mesaDestino = $dados['mesa_destino'] ?? null;
+$atendimentoOrigem = $dados['atendimento_origem'] ?? null;
+
+if (!$mesaDestino || empty($itens)) {
+
+    echo json_encode([
+        "status" => "erro",
+        "msg" => "Dados inválidos"
+    ]);
+
+    exit;
+}
+
+    $pedidoModel = new Pedido();
+
+    $resultado = $pedidoModel->transferirItens(
+        $itens,
+        $mesaDestino,
+        $atendimentoOrigem
+    );
+
+    header('Content-Type: application/json');
+
+    echo json_encode([
+        "status" => $resultado ? "ok" : "erro"
+    ]);
+
+    exit;
+
 }
 
 

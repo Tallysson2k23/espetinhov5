@@ -5,6 +5,8 @@ let produtoTemp = null;
 
 let totalMesa = 0;
 
+let enviandoPedido = false;
+
 /* ==============================
    FUNÇÃO DE FILTRO DE BUSCA
 ============================== */
@@ -226,9 +228,21 @@ function atualizarCarrinho() {
 
 function enviarPedido(atendimento_id) {
 
+    // bloquear duplo clique
+    if (enviandoPedido) return;
+
     if (carrinho.length === 0) {
         alert("Carrinho vazio!");
         return;
+    }
+
+    enviandoPedido = true;
+
+    let botao = document.getElementById("btnEnviarPedido");
+
+    if (botao) {
+        botao.disabled = true;
+        botao.innerText = "Enviando...";
     }
 
     fetch("/espetinhov5/public/pedido/salvar", {
@@ -255,12 +269,28 @@ function enviarPedido(atendimento_id) {
 
         } else {
 
-            alert("Erro ao enviar pedido.");
+            // liberar botão se erro
+            enviandoPedido = false;
 
+            if (botao) {
+                botao.disabled = false;
+                botao.innerText = "Enviar para cozinha";
+            }
+
+            alert("Erro ao enviar pedido.");
         }
 
     })
     .catch(error => {
+
+        // liberar botão se erro
+        enviandoPedido = false;
+
+        if (botao) {
+            botao.disabled = false;
+            botao.innerText = "Enviar para cozinha";
+        }
+
         console.error("Erro ao enviar pedido:", error);
         alert("Erro ao enviar pedido.");
     });
@@ -331,5 +361,123 @@ function atualizarTotalTela(){
 
     document.getElementById("total").innerText =
         totalFinal.toFixed(2);
+
+}
+
+
+function abrirTransferencia() {
+
+    let modal = new bootstrap.Modal(
+        document.getElementById("modalTransferir")
+    );
+
+    modal.show();
+
+    /* ==============================
+       CARREGAR ITENS DA MESA
+    ============================== */
+
+    fetch("/espetinhov5/public/pedido/itens/" + ATENDIMENTO_ID)
+        .then(res => res.json())
+        .then(itens => {
+
+            let lista = document.getElementById("listaTransferencia");
+            lista.innerHTML = "";
+
+            itens.forEach(item => {
+
+                let obs = item.observacao 
+                    ? "<br><small>* " + item.observacao + "</small>"
+                    : "";
+
+                lista.innerHTML += `
+                    <div class="form-check mb-2">
+
+                        <input class="form-check-input itemTransferir"
+                               type="checkbox"
+                               value="${item.id}">
+
+                        <label class="form-check-label">
+
+                            ${item.quantidade}x ${item.nome}
+                            ${obs}
+
+                        </label>
+
+                    </div>
+                `;
+
+            });
+
+        });
+
+    /* ==============================
+       CARREGAR MESAS
+    ============================== */
+
+    fetch("/espetinhov5/public/api/mesas")
+        .then(res => res.json())
+        .then(mesas => {
+
+            let select = document.getElementById("mesaDestino");
+            select.innerHTML = "";
+
+            mesas.forEach(mesa => {
+
+                let option = document.createElement("option");
+
+                option.value = mesa.id;
+                option.text = "Mesa " + mesa.numero;
+
+                select.appendChild(option);
+
+            });
+
+        });
+
+}
+
+function confirmarTransferencia() {
+
+    let itens = [];
+
+    document.querySelectorAll(".itemTransferir:checked").forEach(el => {
+        itens.push(el.value);
+    });
+
+    if (itens.length === 0) {
+        alert("Selecione ao menos um produto.");
+        return;
+    }
+
+    let mesaDestino = document.getElementById("mesaDestino").value;
+
+    fetch("/espetinhov5/public/pedido/transferir", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            atendimento_origem: ATENDIMENTO_ID,
+            mesa_destino: mesaDestino,
+            itens: itens
+        })
+    })
+    .then(res => res.json())
+.then(res => {
+
+    if (res.status === "ok") {
+
+        alert("Produtos transferidos!");
+
+        location.reload();
+
+    } else {
+
+        alert("Erro ao transferir.");
+
+    }
+
+});
 
 }

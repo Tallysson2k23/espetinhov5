@@ -10,8 +10,19 @@ if ($url[0] == 'api') {
 
     require_once __DIR__ . '/../app/controllers/PedidoController.php';
     $controller = new PedidoController();
-    $controller->apiProdutos($url[2]);
-    return;
+
+    // /api/produtos/{grupo}
+    if ($url[1] == 'produtos') {
+        $controller->apiProdutos($url[2]);
+        return;
+    }
+
+    // /api/mesas
+    if ($url[1] == 'mesas') {
+        $controller->mesas();
+        return;
+    }
+
 }
 
 if ($url[0] == 'pedido' && $url[1] == 'salvar') {
@@ -27,6 +38,17 @@ if ($url[0] == 'pedido' && $url[1] == 'fechar') {
     require_once __DIR__ . '/../app/controllers/PedidoController.php';
     $controller = new PedidoController();
     $controller->fechar();
+    return;
+}
+
+if ($url[0] == 'pedido' && $url[1] == 'transferir') {
+
+    require_once __DIR__ . '/../app/controllers/PedidoController.php';
+
+    $controller = new PedidoController();
+
+    $controller->transferirItens();
+
     return;
 }
 
