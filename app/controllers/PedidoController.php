@@ -54,7 +54,14 @@ public function visualizar($atendimento_id) {
         $pedido['itens'] = $pedidoModel->listarItens($pedido['id']);
     }
 
-$this->view('pedido/index', [
+$view = 'pedido/index';
+
+// detectar celular
+if (preg_match('/Mobile|Android|iPhone|iPad/i', $_SERVER['HTTP_USER_AGENT'])) {
+    $view = 'pedido/mobile';
+}
+
+$this->view($view, [
     'atendimento_id' => $atendimento_id,
     'grupos' => $grupos,
     'pedidos' => $pedidos,
