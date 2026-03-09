@@ -74,11 +74,32 @@
                             </small>
 
                             <ul>
-                                <?php foreach ($pedido['itens'] as $item) : ?>
-                                    <li>
-                                        <?= $item['quantidade'] ?>x <?= $item['nome'] ?>
-                                    </li>
-                                <?php endforeach; ?>
+                               <?php foreach ($pedido['itens'] as $item) : ?>
+
+<li>
+
+<?= $item['quantidade'] ?>x <?= $item['nome'] ?>
+
+<?php if (!empty($item['observacao'])) : ?>
+<br>
+<small style="color:#ffae42;">
+* <?= $item['observacao'] ?>
+</small>
+<?php endif; ?>
+
+<?php if ($_SESSION['nivel'] == 'admin') : ?>
+
+<button
+style="margin-left:10px; font-size:12px;"
+onclick="cancelarItem(<?= $item['id'] ?>)">
+❌
+</button>
+
+<?php endif; ?>
+
+</li>
+
+<?php endforeach; ?>
                             </ul>
                         </div>
 
@@ -117,6 +138,17 @@
         onclick="abrirTransferencia()">
     Transferir produtos
 </button>
+
+<?php if ($_SESSION['nivel'] == 'admin') : ?>
+
+<button class="pdv-btn"
+onclick="imprimirConferencia(<?= $atendimento_id ?>)">
+Conferência
+</button>
+
+
+
+<?php endif; ?>
 
             <?php if ($_SESSION['nivel'] == 'admin') : ?>
                 <button class="pdv-btn pdv-btn-fechar"
@@ -165,10 +197,36 @@
             <option value="Cartão Crédito">Cartão Crédito</option>
             <option value="Cartão Débito">Cartão Débito</option>
         </select>
+         
 
-      </div>
+<hr>
 
-      <div class="modal-footer">
+<label class="mb-1">Valor recebido</label>
+
+<input type="number"
+id="valorRecebido"
+class="form-control"
+step="0.01"
+placeholder="0,00"
+oninput="calcularPagamento()">
+
+<div style="margin-top:10px;">
+Restante:
+<strong style="color:#ff4444;">
+R$ <span id="valorRestante">0,00</span>
+</strong>
+</div>
+
+<div style="margin-top:5px;">
+Troco:
+<strong style="color:#00ff88;">
+R$ <span id="valorTroco">0,00</span>
+</strong>
+</div>
+
+</div> <!-- FECHA modal-body -->
+
+<div class="modal-footer">
         <button class="btn btn-secondary"
                 data-bs-dismiss="modal">
             Cancelar
@@ -275,6 +333,55 @@
   </div>
 </div>
 
+<!-- MODAL PRODUTO FINANCEIRO -->
+
+<div class="modal fade" id="modalFinanceiro" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+
+<div class="modal-header bg-dark text-white">
+<h5 class="modal-title">Lançamento Financeiro</h5>
+
+<button type="button"
+class="btn-close btn-close-white"
+data-bs-dismiss="modal">
+</button>
+
+</div>
+
+<div class="modal-body">
+
+
+
+<label class="mt-3 mb-1">Valor</label>
+
+<input type="number"
+id="financeiroValor"
+class="form-control"
+step="0.01"
+placeholder="0,00">
+
+</div>
+
+<div class="modal-footer">
+
+<button class="btn btn-secondary"
+data-bs-dismiss="modal">
+Cancelar
+</button>
+
+<button class="btn btn-success"
+onclick="adicionarFinanceiro()">
+Adicionar
+</button>
+
+</div>
+
+</div>
+</div>
+</div>
+
+
 <script>
 const ATENDIMENTO_ID = <?= $atendimento_id ?>;
 </script>
@@ -288,5 +395,94 @@ document.addEventListener("DOMContentLoaded", function(){
     carregarTotalMesa(<?= $atendimento_id ?>);
 
 });
+
+
+
+
+</script>
+
+
+<script>
+
+function verificarFormaPagamento(){
+
+let forma = document.getElementById("formaPagamento").value;
+
+let areaTroco = document.getElementById("areaTroco");
+
+if(forma === "Dinheiro"){
+
+areaTroco.style.display = "block";
+
+}else{
+
+areaTroco.style.display = "none";
+
+}
+
+}
+
+document.getElementById("formaPagamento").addEventListener("change", verificarFormaPagamento);
+
+/* executa ao abrir página */
+
+verificarFormaPagamento();
+
+</script>
+
+<script>
+
+function calcularTroco(){
+
+let total = parseFloat("<?= $totalAtendimento ?? 0 ?>");
+
+let recebido = parseFloat(document.getElementById("valorRecebido").value);
+
+if(isNaN(recebido)){
+document.getElementById("valorTroco").innerText = "0,00";
+return;
+}
+
+let troco = recebido - total;
+
+if(troco < 0){
+troco = 0;
+}
+
+document.getElementById("valorTroco").innerText =
+troco.toFixed(2).replace(".",",");
+
+}
+
+</script>
+<script>
+
+function calcularPagamento(){
+
+let total = parseFloat("<?= $totalAtendimento ?? 0 ?>");
+
+let recebido = parseFloat(document.getElementById("valorRecebido").value);
+
+if(isNaN(recebido)){
+document.getElementById("valorRestante").innerText = total.toFixed(2).replace(".",",");
+document.getElementById("valorTroco").innerText = "0,00";
+return;
+}
+
+let restante = total - recebido;
+let troco = 0;
+
+if(restante < 0){
+troco = restante * -1;
+restante = 0;
+}
+
+document.getElementById("valorRestante").innerText =
+restante.toFixed(2).replace(".",",");
+
+document.getElementById("valorTroco").innerText =
+troco.toFixed(2).replace(".",",");
+
+}
 
 </script>

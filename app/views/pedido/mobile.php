@@ -2,6 +2,10 @@
 
 @media (max-width:768px){
 
+.pdv-buttons{
+display:none;
+}
+
 body{
     padding:6px;
 }
@@ -39,10 +43,7 @@ body{
     width:100% !important;
 }
 
-#produtos-area{
-    max-height:35vh;
-    overflow:auto;
-}
+
 
 /* BUSCA */
 
@@ -71,9 +72,7 @@ body{
 /* FOOTER */
 
 .pdv-buttons{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
+display:none !important;
 }
 
 .pdv-btn{
@@ -117,7 +116,91 @@ border-top:2px solid #ff6600;
 }
 
 .pdv-carrinho-area{
-    margin-bottom:140px;
+    margin-bottom:20px;
+}
+}
+
+
+
+/* LISTA COMPACTA DE PRODUTOS */
+
+@media (max-width:768px){
+
+.produto-card-inner{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.produto-img{
+width:40px;
+height:40px;
+object-fit:cover;
+border-radius:6px;
+}
+
+.produto-info{
+flex:1;
+}
+
+.produto-nome{
+font-size:14px;
+font-weight:600;
+line-height:1.2;
+}
+
+.produto-preco{
+font-size:13px;
+color:#ff6600;
+margin-top:2px;
+}
+
+.produto-card{
+padding:6px;
+margin-bottom:6px;
+}
+
+}
+
+/* LISTA DE PRODUTOS MOBILE */
+
+@media (max-width:768px){
+
+#produtos-area{
+width:100%;
+overflow:visible;
+max-height:none;
+}
+
+.produto-card{
+display:flex;
+align-items:center;
+padding:8px;
+margin-bottom:6px;
+background:#1b1b1b;
+border-radius:8px;
+}
+
+.produto-img{
+width:45px;
+height:45px;
+object-fit:cover;
+border-radius:6px;
+margin-right:10px;
+}
+
+.produto-info{
+flex:1;
+}
+
+.produto-nome{
+font-size:15px;
+font-weight:600;
+}
+
+.produto-preco{
+font-size:14px;
+color:#ff6600;
 }
 
 }
@@ -134,7 +217,7 @@ font-size:20px;
 padding:12px 16px;
 border-radius:30px;
 box-shadow:0 4px 10px rgba(0,0,0,0.3);
-z-index:9999;
+z-index:1000;
 cursor:pointer;
 }
 
@@ -154,7 +237,7 @@ background:#111;
 color:#fff;
 padding:15px;
 display:none;
-z-index:9999;
+z-index:1000;
 border-top:2px solid #ff6600;
 
 /* NOVO */
@@ -190,6 +273,18 @@ border:none;
 border-radius:6px;
 font-size:18px;
 }
+
+.btnTransferirMobile{
+width:100%;
+padding:14px;
+background:#2563eb;
+color:#fff;
+border:none;
+border-radius:6px;
+font-size:18px;
+margin-top:8px;
+}
+
 
 /* ANIMAÇÃO DO CARRINHO */
 
@@ -239,6 +334,8 @@ background:#888;
 }
 
 </style>
+
+
 <div class="pdv-old">
 
     <!-- HEADER -->
@@ -315,11 +412,25 @@ background:#888;
                             </small>
 
                             <ul>
-                                <?php foreach ($pedido['itens'] as $item) : ?>
-                                    <li>
-                                        <?= $item['quantidade'] ?>x <?= $item['nome'] ?>
-                                    </li>
-                                <?php endforeach; ?>
+                               <?php foreach ($pedido['itens'] as $item) : ?>
+
+<li>
+
+    <?= $item['quantidade'] ?>x <?= $item['nome'] ?>
+
+    <?php if ($_SESSION['nivel'] == 'admin') : ?>
+
+        <button
+            style="margin-left:10px; font-size:12px;"
+            onclick="cancelarItem(<?= $item['id'] ?>)">
+            ❌
+        </button>
+
+    <?php endif; ?>
+
+</li>
+
+<?php endforeach; ?>
                             </ul>
                         </div>
 
@@ -406,6 +517,26 @@ background:#888;
             <option value="Cartão Crédito">Cartão Crédito</option>
             <option value="Cartão Débito">Cartão Débito</option>
         </select>
+
+        <div id="areaTroco" style="display:none; margin-top:15px;">
+
+<label class="mb-1">Valor recebido</label>
+
+<input type="number"
+id="valorRecebido"
+class="form-control"
+step="0.01"
+placeholder="0,00"
+oninput="calcularTroco()">
+
+<div style="margin-top:10px;">
+Troco: 
+<strong style="color:#00ff88;">
+R$ <span id="valorTroco">0,00</span>
+</strong>
+</div>
+
+</div>
 
       </div>
 
@@ -516,6 +647,62 @@ background:#888;
   </div>
 </div>
 
+<!-- MODAL PRODUTO FINANCEIRO -->
+
+<div class="modal fade" id="modalFinanceiro" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+
+<div class="modal-header bg-dark text-white">
+<h5 class="modal-title">Lançamento Financeiro</h5>
+
+<button type="button"
+class="btn-close btn-close-white"
+data-bs-dismiss="modal">
+</button>
+
+</div>
+
+<div class="modal-body">
+
+<label class="mt-3 mb-1">Valor</label>
+
+<input type="number"
+id="financeiroValor"
+class="form-control"
+step="0.01"
+inputmode="decimal"
+pattern="[0-9]*"
+placeholder="0,00"
+style="font-size:22px; padding:12px;">
+
+<!-- telcado do celular
+<input type="number"
+id="financeiroValor"
+class="form-control"
+step="0.01"
+placeholder="0,00"> -->
+
+</div>
+
+<div class="modal-footer">
+
+<button class="btn btn-secondary"
+data-bs-dismiss="modal">
+Cancelar
+</button>
+
+<button class="btn btn-success"
+onclick="adicionarFinanceiro()">
+Adicionar
+</button>
+
+</div>
+
+</div>
+</div>
+</div>
+
 <div id="mobileCartButton">
 🛒 <span id="cartCount">0</span>
 </div>
@@ -526,12 +713,14 @@ background:#888;
 Pedido atual
 <button onclick="fecharCarrinho()">✕</button>
 </div>
-
-<div id="mobilePedidosEnviados"></div>
+<div class="cartHeader">
+Itens do pedido
+</div>
+<ul id="mobileCartItems"></ul>
 
 <hr>
 
-<ul id="mobileCartItems"></ul>
+<div id="mobilePedidosEnviados"></div>
 
 <div class="cartTotal">
 TOTAL R$ <span id="mobileCartTotal">0,00</span>
@@ -543,6 +732,13 @@ class="btnEnviarCarrinho"
 onclick="enviarPedidoMobile(<?= $atendimento_id ?>)">
 Enviar para cozinha
 </button>
+
+<!--
+<button
+class="btnTransferirMobile"
+onclick="abrirTransferencia()">
+Transferir produtos
+</button> -->
 
 </div>
 
@@ -559,6 +755,60 @@ document.addEventListener("DOMContentLoaded", function(){
     carregarTotalMesa(<?= $atendimento_id ?>);
 
 });
+
+</script>
+
+<script>
+
+function verificarFormaPagamento(){
+
+let forma = document.getElementById("formaPagamento").value;
+
+let areaTroco = document.getElementById("areaTroco");
+
+if(forma === "Dinheiro"){
+
+areaTroco.style.display = "block";
+
+}else{
+
+areaTroco.style.display = "none";
+
+}
+
+}
+
+document.getElementById("formaPagamento").addEventListener("change", verificarFormaPagamento);
+
+/* executa ao abrir página */
+
+verificarFormaPagamento();
+
+</script>
+
+<script>
+
+function calcularTroco(){
+
+let total = parseFloat("<?= $totalAtendimento ?? 0 ?>");
+
+let recebido = parseFloat(document.getElementById("valorRecebido").value);
+
+if(isNaN(recebido)){
+document.getElementById("valorTroco").innerText = "0,00";
+return;
+}
+
+let troco = recebido - total;
+
+if(troco < 0){
+troco = 0;
+}
+
+document.getElementById("valorTroco").innerText =
+troco.toFixed(2).replace(".",",");
+
+}
 
 </script>
 

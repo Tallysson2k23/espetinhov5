@@ -49,20 +49,41 @@ function abrirObsProduto(id, nome, preco) {
 
 function confirmarObsProduto() {
 
-    let obs = document.getElementById("produtoObservacao").value;
+let obs = document.getElementById("produtoObservacao").value;
 
-    adicionarProduto(
-        produtoTemp.id,
-        produtoTemp.nome,
-        produtoTemp.preco,
-        obs
-    );
+// produto financeiro
+if(produtoTemp.id == 229){
 
-    let modal = bootstrap.Modal.getInstance(
-        document.getElementById("modalObsProduto")
-    );
+window.financeiroDescricao = obs;
 
-    modal.hide();
+let modalObs = bootstrap.Modal.getInstance(
+document.getElementById("modalObsProduto")
+);
+
+modalObs.hide();
+
+let modalValor = new bootstrap.Modal(
+document.getElementById("modalFinanceiro")
+);
+
+modalValor.show();
+
+return;
+
+}
+
+adicionarProduto(
+produtoTemp.id,
+produtoTemp.nome,
+produtoTemp.preco,
+obs
+);
+
+let modal = bootstrap.Modal.getInstance(
+document.getElementById("modalObsProduto")
+);
+
+modal.hide();
 }
 
 /* ==============================
@@ -150,6 +171,23 @@ document.querySelectorAll(".grupo-btn").forEach(btn => {
 ============================== */
 
 function adicionarProduto(id, nome, preco, observacao = "") {
+
+// PRODUTO FINANCEIRO
+if(id == 229){
+
+produtoTemp = { id, nome, preco };
+
+document.getElementById("produtoObsNome").innerText = "Descrição financeira";
+document.getElementById("produtoObservacao").value = "";
+
+let modal = new bootstrap.Modal(
+document.getElementById("modalObsProduto")
+);
+
+modal.show();
+
+return;
+}
 
     let existente = carrinho.find(item => item.id === id);
 
@@ -436,13 +474,12 @@ function abrirTransferencia() {
         });
 
 }
-
 function confirmarTransferencia() {
 
     let itens = [];
 
     document.querySelectorAll(".itemTransferir:checked").forEach(el => {
-        itens.push(el.value);
+        itens.push(parseInt(el.value));
     });
 
     if (itens.length === 0) {
@@ -464,19 +501,133 @@ function confirmarTransferencia() {
         })
     })
     .then(res => res.json())
+    .then(res => {
+
+        if (res.status === "ok") {
+
+            alert("Produtos transferidos!");
+
+            /* fecha o modal */
+            let modal = bootstrap.Modal.getInstance(
+                document.getElementById("modalTransferir")
+            );
+            modal.hide();
+
+            /* remove os itens da tela */
+            itens.forEach(id => {
+
+                let el = document.querySelector(`[data-item-id='${id}']`);
+
+                if(el){
+                    el.remove();
+                }
+
+            });
+
+            /* atualiza total da mesa */
+            carregarTotalMesa(ATENDIMENTO_ID);
+
+        } else {
+
+            alert("Erro ao transferir.");
+
+        }
+
+    })
+    .catch(err => {
+
+        console.error(err);
+        alert("Erro na comunicação com servidor.");
+
+    });
+
+}
+
+function imprimirConferencia(atendimentoId){
+
+fetch("/espetinhov5/public/pedido/conferencia/" + atendimentoId)
+.then(r => r.json())
 .then(res => {
 
-    if (res.status === "ok") {
+if(res.status === "ok"){
 
-        alert("Produtos transferidos!");
+alert("Conferência enviada para impressora.");
 
-        location.reload();
+}
 
-    } else {
+})
+.catch(() => {
 
-        alert("Erro ao transferir.");
+alert("Erro ao imprimir conferência.");
 
-    }
+});
+
+}
+
+function adicionarFinanceiro(){
+
+let valor = parseFloat(document.getElementById("financeiroValor").value);
+
+if(!valor || valor <= 0){
+alert("Digite um valor válido.");
+return;
+}
+
+carrinho.push({
+id: 229,
+nome: "Lançamento financeiro",
+preco: valor,
+quantidade: 1,
+observacao: window.financeiroDescricao || ""
+});
+
+calcularTotal();
+atualizarCarrinho();
+
+let modal = bootstrap.Modal.getInstance(
+document.getElementById("modalFinanceiro")
+);
+
+modal.hide();
+
+document.getElementById("financeiroValor").value = "";
+
+}
+
+function cancelarItem(itemId){
+
+if(!confirm("Deseja realmente cancelar este item?")){
+return;
+}
+
+fetch("/espetinhov5/public/pedido/cancelarItem",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+item_id:itemId
+})
+})
+.then(res=>res.json())
+.then(res=>{
+
+if(res.status === "ok"){
+
+alert("Item cancelado.");
+
+location.reload();
+
+}else{
+
+alert("Erro ao cancelar item.");
+
+}
+
+})
+.catch(()=>{
+
+alert("Erro ao cancelar item.");
 
 });
 

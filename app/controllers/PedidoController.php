@@ -460,6 +460,124 @@ if (!$mesaDestino || empty($itens)) {
 
 }
 
+public function conferencia($atendimento_id)
+{
+
+    if (!isset($_SESSION['usuario']) || $_SESSION['nivel'] != 'admin') {
+        http_response_code(403);
+        exit;
+    }
+
+    require_once __DIR__ . '/../models/Pedido.php';
+    require_once __DIR__ . '/../../config/database.php';
+    require_once __DIR__ . '/../services/CupomService.php';
+    require_once __DIR__ . '/../services/ImpressoraService.php';
+
+    $pedidoModel = new Pedido();
+    $db = Database::getInstance()->getConnection();
+
+    // Buscar total
+    $total = $pedidoModel->calcularTotalAtendimento($atendimento_id);
+
+    // Buscar mesa
+    $sqlMesa = "
+        SELECT m.numero
+        FROM mesas m
+        JOIN atendimentos a ON a.mesa_id = m.id
+        WHERE a.id = :id
+    ";
+
+    $stmtMesa = $db->prepare($sqlMesa);
+    $stmtMesa->bindValue(':id', $atendimento_id);
+    $stmtMesa->execute();
+
+    $mesaNumero = $stmtMesa->fetch(PDO::FETCH_ASSOC)['numero'];
+
+    // Buscar itens
+    $sqlItens = "
+        SELECT 
+            ip.quantidade,
+            p.nome,
+            ip.preco_unitario
+        FROM itens_pedido ip
+        JOIN pedidos pe ON pe.id = ip.pedido_id
+        JOIN produtos p ON p.id = ip.produto_id
+        WHERE pe.atendimento_id = :id
+    ";
+
+    $stmtItens = $db->prepare($sqlItens);
+    $stmtItens->bindValue(':id', $atendimento_id);
+    $stmtItens->execute();
+
+    $itens = $stmtItens->fetchAll(PDO::FETCH_ASSOC);
+
+    // Gerar cupom conferência
+    $conteudo = CupomService::gerarConferencia(
+        $mesaNumero,
+        $atendimento_id,
+        $itens,
+        $total
+    );
+
+    // Buscar impressora 3
+    $sqlImp = "SELECT * FROM impressoras WHERE id = 3 LIMIT 1";
+    $stmtImp = $db->prepare($sqlImp);
+    $stmtImp->execute();
+
+    $impressora = $stmtImp->fetch(PDO::FETCH_ASSOC);
+
+    if ($impressora) {
+
+        ImpressoraService::imprimir(
+            $impressora['ip'],
+            $impressora['porta'],
+            $conteudo
+        );
+    }
+
+    echo json_encode([
+        "status" => "ok"
+    ]);
+
+}
+
+public function cancelarItem()
+{
+
+    if ($_SESSION['nivel'] != 'admin') {
+
+        echo json_encode([
+            "status" => "erro",
+            "msg" => "Apenas administrador pode cancelar item."
+        ]);
+
+        exit;
+    }
+
+    require_once __DIR__ . '/../models/Pedido.php';
+
+    $dados = json_decode(file_get_contents("php://input"), true);
+
+    $itemId = $dados['item_id'] ?? null;
+
+    if (!$itemId) {
+
+        echo json_encode([
+            "status" => "erro"
+        ]);
+
+        exit;
+    }
+
+    $pedido = new Pedido();
+
+    $ok = $pedido->cancelarItem($itemId);
+
+    echo json_encode([
+        "status" => $ok ? "ok" : "erro"
+    ]);
+
+}
 
 
 }
