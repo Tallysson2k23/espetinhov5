@@ -1,6 +1,8 @@
 let carrinho = [];
 let total = 0;
 
+let permitirSaida = false;
+
 let produtoTemp = null;
 
 let totalMesa = 0;
@@ -298,6 +300,8 @@ function enviarPedido(atendimento_id) {
 
         if (res.status === "ok") {
 
+                permitirSaida = true;
+            
             sessionStorage.setItem(
                 "msg_sucesso",
                 "Pedido enviado para cozinha!"
@@ -632,3 +636,14 @@ alert("Erro ao cancelar item.");
 });
 
 }
+
+window.addEventListener("beforeunload", function (e) {
+
+    if (carrinho.length > 0 && !permitirSaida) {
+
+        e.preventDefault();
+        e.returnValue = "";
+
+    }
+
+});
