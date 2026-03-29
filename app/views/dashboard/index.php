@@ -51,6 +51,8 @@
             Histórico
         </a>
 
+        <a href="/espetinhov5/public/impressao" class="admin-item">🖨 fila</a>
+
     </div>
 <?php endif; ?>
 

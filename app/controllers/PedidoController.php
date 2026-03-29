@@ -42,17 +42,24 @@ public function visualizar($atendimento_id) {
     require_once __DIR__ . '/../models/Grupo.php';
     require_once __DIR__ . '/../models/Pedido.php';
 
-    $grupoModel = new Grupo();
-    $pedidoModel = new Pedido();
+$grupoModel = new Grupo();
+$pedidoModel = new Pedido();
 
-    $grupos = $grupoModel->listarAtivos();
-    $pedidos = $pedidoModel->listarPorAtendimento($atendimento_id);
-    $totalAtendimento = $pedidoModel->calcularTotalAtendimento($atendimento_id);
+$grupos = $grupoModel->listarAtivos();
 
-    // Buscar itens de cada pedido
-    foreach ($pedidos as &$pedido) {
-        $pedido['itens'] = $pedidoModel->listarItens($pedido['id']);
-    }
+// 🔥 adiciona o grupo TODOS no início
+array_unshift($grupos, [
+    'id' => 0,
+    'nome' => 'TODOS'
+]);
+
+$pedidos = $pedidoModel->listarPorAtendimento($atendimento_id);
+$totalAtendimento = $pedidoModel->calcularTotalAtendimento($atendimento_id);
+
+// Buscar itens de cada pedido
+foreach ($pedidos as &$pedido) {
+    $pedido['itens'] = $pedidoModel->listarItens($pedido['id']);
+}
 
 $view = 'pedido/index';
 
@@ -75,7 +82,13 @@ public function apiProdutos($grupo_id) {
     require_once __DIR__ . '/../models/Produto.php';
 
     $produtoModel = new Produto();
-    $produtos = $produtoModel->listarPorGrupo($grupo_id);
+
+    // 🔥 SE FOR TODOS
+    if ($grupo_id == 0) {
+        $produtos = $produtoModel->listarTodos();
+    } else {
+        $produtos = $produtoModel->listarPorGrupo($grupo_id);
+    }
 
     header('Content-Type: application/json');
     echo json_encode($produtos);
@@ -211,11 +224,12 @@ public function salvar() {
             $itensGrupo
         );
 
-        ImpressoraService::imprimir(
-            $imp['ip'],
-            $imp['porta'],
-            $conteudo
-        );
+       ImpressoraService::imprimir(
+    $imp['ip'],
+    $imp['porta'],
+    $conteudo,
+    $pedido_id
+);
     }
 
     // =========================
@@ -342,11 +356,12 @@ public function fechar() {
     $impressora = $stmtImp->fetch(PDO::FETCH_ASSOC);
 
     if ($impressora) {
-        ImpressoraService::imprimir(
-            $impressora['ip'],
-            $impressora['porta'],
-            $conteudo
-        );
+       ImpressoraService::imprimir(
+    $impressora['ip'],
+    $impressora['porta'],
+    $conteudo,
+    $atendimento_id
+);
     }
 
     // =========================
@@ -529,10 +544,11 @@ public function conferencia($atendimento_id)
     if ($impressora) {
 
         ImpressoraService::imprimir(
-            $impressora['ip'],
-            $impressora['porta'],
-            $conteudo
-        );
+    $impressora['ip'],
+    $impressora['porta'],
+    $conteudo,
+    $atendimento_id
+);
     }
 
     echo json_encode([

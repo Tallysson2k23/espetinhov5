@@ -7,6 +7,7 @@ espetinhov5/
 │   │   ├── PedidoController.php
 │   │   ├── AdminController.php
 │   │   ├── HistoricoController.php
+│   │   ├── ImpressaoController.php
 │   │
 │   ├── models/
 │   │   ├── Usuario.php
@@ -14,14 +15,18 @@ espetinhov5/
 │   │   ├── Grupo.php
 │   │   ├── Mesa.php
 │   │   ├── Pedido.php
-│   │   ├── Atendimento.php Impressora.php
+│   │   ├── Atendimento.php
 │   │   ├── Impressora.php
+│   │   ├── FilaImpressao.php
 │   │   
 │   ├── services/ 
 │   │   ├── ImpressoraService.php
 │   │   ├── CupomService.php
 │   │
 │   ├── views/
+│   │   ├── impressao/
+│   │   │   ├── index.php
+│   │   │
 │   │   ├── layouts/
 │   │   │   ├── header.php
 │   │   │   ├── footer.php
@@ -131,3 +136,11 @@ em cada ponto importante.
 
 sobre as rotas:
 Router usa if manual,
+
+------------------
+
+roda no banco para adcionar img
+
+UPDATE produtos 
+SET imagem = 'coca.jpg'
+WHERE nome ILIKE '%coca zero%';

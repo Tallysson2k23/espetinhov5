@@ -105,65 +105,79 @@ document.addEventListener("DOMContentLoaded", function () {
    CARREGAR PRODUTOS POR GRUPO
 ============================== */
 
-document.querySelectorAll(".grupo-btn").forEach(btn => {
+document.addEventListener("DOMContentLoaded", function () {
 
-    btn.addEventListener("click", function() {
+    // 🔥 clique nos grupos
+    document.querySelectorAll(".grupo-btn").forEach(btn => {
 
-        // remove ativo de todos
-        document.querySelectorAll(".grupo-btn").forEach(b => 
-            b.classList.remove("ativo")
-        );
+        btn.addEventListener("click", function() {
 
-        // adiciona ativo no clicado
-        this.classList.add("ativo");
+            // remove ativo de todos
+            document.querySelectorAll(".grupo-btn").forEach(b => 
+                b.classList.remove("ativo")
+            );
 
-        let grupoId = this.dataset.id;
+            // adiciona ativo no clicado
+            this.classList.add("ativo");
 
-        fetch("/espetinhov5/public/api/produtos/" + grupoId)
-            .then(res => res.json())
-            .then(produtos => {
+            let grupoId = this.dataset.id;
 
-                let area = document.getElementById("produtos-area");
-                area.innerHTML = "";
+            fetch("/espetinhov5/public/api/produtos/" + grupoId)
+                .then(res => res.json())
+                .then(produtos => {
 
-                produtos.forEach(prod => {
+                    let area = document.getElementById("produtos-area");
+                    area.innerHTML = "";
 
-                    let imagem = prod.imagem 
-                        ? "/espetinhov5/public/uploads/" + prod.imagem 
-                        : "https://via.placeholder.com/100x100?text=Sem+Imagem";
+                    produtos.forEach(prod => {
 
-                    let card = document.createElement("div");
-                    card.className = "card mb-2 produto-card";
-                    card.style.cursor = "pointer";
+                        let imagem = prod.imagem 
+                            ? "/espetinhov5/public/uploads/" + prod.imagem 
+                            : "https://via.placeholder.com/100x100?text=Sem+Imagem";
 
-                   card.onclick = function() {
-    abrirObsProduto(prod.id, prod.nome, prod.preco);
-};
+                        let card = document.createElement("div");
+                        card.className = "card mb-2 produto-card";
+                        card.style.cursor = "pointer";
 
-                    card.innerHTML = `
-    <div class="produto-card-inner">
-        <img src="${imagem}" class="produto-img">
+                        card.onclick = function() {
+                            abrirObsProduto(prod.id, prod.nome, prod.preco);
+                        };
 
-        <div class="produto-info">
-            <div class="produto-nome">${prod.nome}</div>
-            <div class="produto-preco">
-                R$ ${parseFloat(prod.preco).toFixed(2)}
-            </div>
-        </div>
-    </div>
-`;
+                        card.innerHTML = `
+                        <div class="produto-card-inner">
+                            <img src="${imagem}" class="produto-img">
 
-                    area.appendChild(card);
+                            <div class="produto-info">
+                                <div class="produto-nome">${prod.nome}</div>
+                                <div class="produto-preco">
+                                    R$ ${parseFloat(prod.preco).toFixed(2)}
+                                </div>
+                            </div>
+                        </div>
+                        `;
+
+                        area.appendChild(card);
+
+                    });
+
+                    aplicarFiltroBusca();
 
                 });
 
-                /* IMPORTANTE:
-                   Reaplica filtro após carregar grupo */
-                aplicarFiltroBusca();
-
-            });
+        });
 
     });
+
+    // 🔥 AUTO CARREGAR TODOS
+    setTimeout(() => {
+
+        let btnTodos = document.querySelector(".grupo-btn[data-id='0']");
+
+        if (btnTodos) {
+            btnTodos.click();
+        }
+
+    }, 300);
 
 });
 
@@ -645,5 +659,24 @@ window.addEventListener("beforeunload", function (e) {
         e.returnValue = "";
 
     }
+
+});
+
+/* ==============================
+   AUTO CARREGAR TODOS AO ENTRAR
+============================== */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    // espera um pouco pra garantir que os botões carregaram
+    setTimeout(() => {
+
+        let btnTodos = document.querySelector(".grupo-btn[data-id='0']");
+
+        if (btnTodos) {
+            btnTodos.click();
+        }
+
+    }, 200);
 
 });
